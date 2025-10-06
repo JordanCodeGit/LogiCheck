@@ -25,7 +25,7 @@ const Layout = ({ children }) => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 group">
               <img 
-                src="/public/Logo Logicheck Kotak.png" 
+                src="/logo-logicheck.png" 
                 alt="LogiCheck Logo" 
                 className="w-14 h-14 group-hover:scale-110 transition-transform"
               />

@@ -50,7 +50,7 @@ const HomePage = () => {
       <section className="text-center py-4 px-4">
         <div className="inline-block">
           <img 
-            src="/public/Logo Logicheck Kotak.png" 
+            src="/logo-logicheck.png" 
             alt="LogiCheck Logo" 
             className="w-48 h-48 mx-auto"
           />
