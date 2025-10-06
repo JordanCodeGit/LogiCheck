@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { AlertCircle, Check, Key, TestTube } from 'lucide-react';
 import Alert from './Alert';
 import { getApiKey, saveApiKey, clearApiKey, validateApiKeyFormat } from '../utils/apiKeyUtils';
+import { syncApiKeyToExtension, listenToExtensionChanges, initializeSync } from '../utils/extensionSync';
 
 const ApiKeySettings = () => {
   const [apiKey, setApiKey] = useState('');
@@ -9,13 +10,47 @@ const ApiKeySettings = () => {
   const [isTesting, setIsTesting] = useState(false);
   const [isValid, setIsValid] = useState(false);
 
-  // Load stored key on mount
+  // Load stored key on mount and initialize sync with extension
   useEffect(() => {
-    const storedKey = getApiKey();
-    if (storedKey) {
-      setApiKey(storedKey);
-      setIsValid(validateApiKeyFormat(storedKey));
-    }
+    const initializeApiKey = async () => {
+      // First, try to sync from extension
+      const syncResult = await initializeSync();
+      
+      // Then load the key (either synced or existing)
+      const storedKey = getApiKey();
+      if (storedKey) {
+        setApiKey(storedKey);
+        setIsValid(validateApiKeyFormat(storedKey));
+        
+        if (syncResult.synced) {
+          setStatus({ 
+            message: '🔄 API Key synced from extension', 
+            type: 'success' 
+          });
+        }
+      }
+    };
+
+    initializeApiKey();
+
+    // Listen for API key updates from extension
+    listenToExtensionChanges((newApiKey) => {
+      if (newApiKey) {
+        setApiKey(newApiKey);
+        setIsValid(validateApiKeyFormat(newApiKey));
+        setStatus({ 
+          message: '🔄 API Key updated from extension', 
+          type: 'success' 
+        });
+      } else {
+        setApiKey('');
+        setIsValid(false);
+        setStatus({ 
+          message: '🔄 API Key cleared from extension', 
+          type: 'success' 
+        });
+      }
+    });
   }, []);
 
   // Handle input change
@@ -35,7 +70,7 @@ const ApiKeySettings = () => {
   };
 
   // Save API key to localStorage
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmedKey = apiKey.trim();
     if (!validateApiKeyFormat(trimmedKey)) {
       setStatus({ message: 'Invalid API key format', type: 'error' });
@@ -43,7 +78,21 @@ const ApiKeySettings = () => {
     }
 
     saveApiKey(trimmedKey);
-    setStatus({ message: 'API Key saved successfully!', type: 'success' });
+    
+    // Sync to extension
+    const syncResult = await syncApiKeyToExtension(trimmedKey);
+    
+    if (syncResult.success) {
+      setStatus({ 
+        message: '✅ API Key saved and synced to extension!', 
+        type: 'success' 
+      });
+    } else {
+      setStatus({ 
+        message: '✅ API Key saved (extension not available)', 
+        type: 'success' 
+      });
+    }
   };
 
   // Test API key by making a lightweight request
@@ -97,11 +146,25 @@ const ApiKeySettings = () => {
   };
 
   // Clear API key
-  const handleClear = () => {
+  const handleClear = async () => {
     setApiKey('');
     clearApiKey();
     setIsValid(false);
-    setStatus({ message: 'API Key cleared', type: 'success' });
+    
+    // Sync to extension
+    const syncResult = await syncApiKeyToExtension('');
+    
+    if (syncResult.success) {
+      setStatus({ 
+        message: '🗑️ API Key cleared and synced to extension', 
+        type: 'success' 
+      });
+    } else {
+      setStatus({ 
+        message: '🗑️ API Key cleared (extension not available)', 
+        type: 'success' 
+      });
+    }
   };
 
   return (

@@ -61,13 +61,15 @@ const AnalyzerPage = () => {
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Paste your text here... (articles, arguments, social media posts, etc.)"
-            className="textarea-field min-h-[400px]"
+            placeholder="Paste your text here...
+(articles, arguments, social media posts, etc.)"
+            className="textarea min-h-[500px] font-sans text-base"
+            rows="20"
           />
           <button
             onClick={handleAnalyze}
             disabled={loading || !inputText.trim()}
-            className="btn-primary w-full mt-4"
+            className="btn btn-primary w-full mt-4"
           >
             {loading ? 'Analyzing...' : 'Analyze Text'}
           </button>

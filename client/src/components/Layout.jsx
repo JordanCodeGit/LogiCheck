@@ -27,9 +27,9 @@ const Layout = ({ children }) => {
               <img 
                 src="/Logo Logicheck Kotak.png" 
                 alt="LogiCheck Logo" 
-                className="w-12 h-12 group-hover:scale-110 transition-transform"
+                className="w-14 h-14 group-hover:scale-110 transition-transform"
               />
-              <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent ml-1">
                 LogiCheck
               </span>
             </Link>

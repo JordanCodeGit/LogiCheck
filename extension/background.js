@@ -267,5 +267,63 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   }
 
+  // Handle sync request from web page (via content script)
+  if (request.action === 'syncApiKeyFromWeb') {
+    try {
+      const apiKey = request.apiKey || '';
+      chrome.storage.local.set({ GEMINI_API_KEY: apiKey }, () => {
+        // Reload key in memory
+        if (apiKey) {
+          GOOGLE_AI_API_KEY = apiKey;
+          MODEL_ENDPOINTS = [`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_AI_API_KEY}`];
+        } else {
+          GOOGLE_AI_API_KEY = null;
+          MODEL_ENDPOINTS = null;
+        }
+        console.log('API key synced from web app:', apiKey ? 'Set' : 'Cleared');
+        sendResponse({ status: 'ok' });
+      });
+      return true; // async
+    } catch (e) {
+      console.error('Failed to sync API key from web', e);
+      sendResponse({ status: 'error', error: e.message });
+    }
+  }
+
+  // Handle get API key request from web page (via content script)
+  if (request.action === 'getApiKey') {
+    try {
+      chrome.storage.local.get(['GEMINI_API_KEY'], (result) => {
+        sendResponse({ apiKey: result?.GEMINI_API_KEY || null });
+      });
+      return true; // async
+    } catch (e) {
+      console.error('Failed to get API key', e);
+      sendResponse({ apiKey: null });
+    }
+  }
+
   return false;
 });
+
+// Listen for storage changes and notify content scripts to sync with web page
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local' && changes.GEMINI_API_KEY) {
+    const newApiKey = changes.GEMINI_API_KEY.newValue || null;
+    console.log('API key changed in extension storage, notifying content scripts...');
+    
+    // Notify all tabs about the API key change
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach((tab) => {
+        chrome.tabs.sendMessage(tab.id, {
+          action: 'syncApiKeyFromExtension',
+          apiKey: newApiKey
+        }).catch((err) => {
+          // Ignore errors for tabs that don't have the content script
+          console.debug('Could not notify tab', tab.id, err.message);
+        });
+      });
+    });
+  }
+});
+

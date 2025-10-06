@@ -1,103 +1,182 @@
 # LogiCheck - Web App & Browser Extension
 
-LogiCheck is a combined web application and browser extension that serves as a conversational AI coach for sharpening logical reasoning, identifying fallacies and biases, and improving argumentative writing.
+> 🧠 **Your AI coach for sharpening logical reasoning** - Identify fallacies, detect biases, and improve argumentative writing.
 
-## Table of Contents
-- [Quick Start](#quick-start)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Running the Application](#running-the-application)
-  - [Configure API Key (Web App)](#configure-api-key-web-app)
-  - [Load the Chrome Extension](#load-the-chrome-extension)
-- [Architecture & Project Structure](#architecture--project-structure)
-- [API Endpoints](#api-endpoints)
-- [Features](#features)
-- [AI Model](#ai-model)
-- [Troubleshooting](#troubleshooting)
-- [Documentation](#documentation)
+LogiCheck is an integrated platform available as both a web application and browser extension, powered by Google's Gemini AI to help you analyze arguments, practice critical thinking, and write better essays.
+
+[![License](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
+[![React](https://img.shields.io/badge/react-18.2-61dafb.svg)](https://reactjs.org)
+
+## ✨ Features
+
+### 🔍 Core Analyzer
+Analyze any text to identify:
+- Main claims and arguments
+- Hidden assumptions
+- Logical fallacies
+- Reasoning quality
+
+### 🥋 Fallacy Dojo
+Interactive training ground:
+- **Fallacy Sparring**: Identify fallacies in realistic scenarios
+- **Bias Blindspot**: Compare articles to detect bias
+- Socratic dialogue for deeper understanding
+
+### ✍️ Essay Clinic
+Get AI-powered feedback on your essays:
+- Argumentative quality analysis
+- Structure and coherence review
+- Suggestions for improvement
+
+### 🌐 Dual Platform
+- **Web App**: Full-featured interface at http://localhost:5173
+- **Browser Extension**: Analyze text on any webpage
+
+## 📋 Table of Contents
+- [Quick Start](#-quick-start)
+- [Architecture](#-architecture)
+- [Shared Components](#-shared-components)
+- [API Documentation](#-api-documentation)
+- [Development](#-development)
+- [Build & Deployment](#-build--deployment)
+- [Documentation](#-documentation)
+- [Troubleshooting](#-troubleshooting)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-To get started with LogiCheck, ensure you have the following installed:
-- **Node.js** (v18 or higher): Required to run the backend and frontend.
-- **MongoDB** (optional): Needed for persistent storage of user data and analysis results.
-- **Google Gemini API Key**: Obtain this from [Google AI Studio](https://aistudio.google.com/app/apikey) to enable AI-powered analysis.
+- **Node.js** v18 or higher
+- **MongoDB** (optional, for user data persistence)
+- **Google Gemini API Key** - Get yours at [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/RedRNS/LogiCheck.git
-   cd LogiCheck
-   ```
-2. Install all dependencies for the root, server, and client:
-   ```bash
-   npm run install:all
-   ```
+
+```bash
+# Clone repository
+git clone https://github.com/RedRNS/LogiCheck.git
+cd LogiCheck
+
+# Install all dependencies (root, server, client)
+npm run install:all
+```
 
 ### Running the Application
-1. Start the backend server (Terminal 1):
-   ```bash
-   npm run dev:server
-   ```
-   - The backend will run on `http://localhost:5000`.
-   - Check the terminal for any errors or logs.
 
-2. Start the frontend client (Terminal 2):
-   ```bash
-   npm run dev:client
-   ```
-   - The frontend will be available at `http://localhost:5173`.
+```bash
+# Terminal 1 - Start backend server
+npm run dev:server
 
-### Configure API Key (Web App)
-1. Open the web app in your browser at `http://localhost:5173`.
-2. Navigate to **Settings** in the navigation menu.
-3. Paste your Gemini API key in the input field.
-4. Click **Test Key** to verify the key is valid.
-5. Click **Save** to store the key locally.
+# Terminal 2 - Start web client
+npm run dev:client
+```
 
-**Security Note:** The API key is stored securely in your browser's localStorage and is never sent to the server.
+- **Backend**: http://localhost:5000
+- **Frontend**: http://localhost:5173
 
-### Load the Chrome Extension
-1. Open Chrome and navigate to `chrome://extensions/`.
-2. Enable **Developer mode** (toggle in the top-right corner).
-3. Click **Load unpacked** and select the `extension/` folder in this repository.
-4. Configure the API key via the extension **Options** page:
-   - Right-click the LogiCheck extension icon in the toolbar.
-   - Select **Options**.
-   - Paste your Gemini API key and click **Save API Key**.
-   - (Optional) Click **Test Key** to verify the key.
+### Configure API Key
 
-## 🏗️ Architecture & Project Structure
+#### Web App
+1. Open http://localhost:5173
+2. Navigate to **Settings**
+3. Paste your Gemini API key
+4. Click **Test Key** → **Save**
 
-LogiCheck is a full-stack application with the following structure:
+#### Browser Extension
+1. Build extension: `npm run build:extension`
+2. Open `chrome://extensions/`
+3. Enable **Developer mode**
+4. Click **Load unpacked** → Select `extension/dist/`
+5. Right-click extension icon → **Options**
+6. Enter API key → **Save**
+
+## 🏗️ Architecture
+
+LogiCheck uses a **shared component architecture** for consistency between web and extension:
 
 ```
 LogiCheck/
-├── client/          # React frontend (Vite + Tailwind)
-│   ├── src/         # Source code for components, pages, and styles
-│   ├── public/      # Static assets
-│   └── package.json # Frontend dependencies and scripts
-├── server/          # Node.js / Express backend
-│   ├── routes/      # API route handlers
-│   ├── models/      # MongoDB schemas
-│   ├── controllers/ # Business logic for API endpoints
-│   └── package.json # Backend dependencies and scripts
-├── extension/       # Browser extension (Manifest V3)
-│   ├── background.js # Service worker for API calls
-│   ├── content.js    # Injects sidebar UI into web pages
-│   ├── options.html  # Options page for API key configuration
-│   └── manifest.json # Chrome extension configuration
-├── docs/            # Documentation and troubleshooting guides
-├── package.json     # Root scripts that orchestrate client/server
-└── README.md        # This file
+├── shared/              # 🆕 Shared code (web + extension)
+│   ├── components/     # React components (Button, Card, Modal, etc.)
+│   ├── api/            # Unified API layer
+│   ├── styles/         # Global CSS & Tailwind config
+│   └── utils/          # Utility functions
+├── client/             # Web application (React + Vite)
+│   ├── src/
+│   │   ├── pages/      # Main pages (Analyzer, Dojo, Clinic)
+│   │   └── components/ # Web-specific components
+│   └── vite.config.js  # ✅ Configured for @shared imports
+├── extension/          # Browser extension (Manifest V3)
+│   ├── popup.jsx       # React popup UI
+│   ├── background.js   # Service worker
+│   └── manifest.json   # Extension config
+├── server/             # Backend API (Node.js + Express)
+│   ├── routes/         # API routes
+│   ├── controllers/    # Business logic
+│   └── models/         # MongoDB schemas
+├── tailwind.config.js  # 🆕 Centralized Tailwind config
+├── vite.config.extension.js  # 🆕 Extension build config
+└── package.json        # 🔄 Updated with unified scripts
 ```
 
-## 🔌 API Endpoints
-The backend provides the following API endpoints:
+## 🎨 Shared Components
 
-### Text Analysis
-- `POST /api/analyze`
+LogiCheck provides 8 reusable React components:
+
+```jsx
+import { 
+  Alert,          // Notifications (info, success, warning, error)
+  Badge,          // Status indicators
+  Button,         // 6 variants × 3 sizes
+  Card,           // Content containers
+  ChatBubble,     // Socratic dialogue messages
+  FallacyCard,    // Display fallacies
+  LoadingSpinner, // Loading states
+  Modal           // Dialog windows
+} from '@shared/components';
+```
+
+### Example Usage
+
+```jsx
+import { Button, Card, Alert } from '@shared/components';
+
+function MyComponent() {
+  return (
+    <Card variant="hover">
+      <Alert type="success" message="Analysis complete!" />
+      <Button variant="primary" onClick={handleAnalyze}>
+        Analyze Text
+      </Button>
+    </Card>
+  );
+}
+```
+
+**[See all components →](./shared/README.md)**
+
+## 🔌 API Documentation
+
+### Unified API Layer
+
+Both web and extension use the same API functions:
+
+```javascript
+import { 
+  analyzeText,
+  getSparringChallenge,
+  analyzeEssay 
+} from '@shared/api/shared-api';
+
+// Analyze text for fallacies
+const result = await analyzeText(userInput);
+
+// Get a new challenge
+const challenge = await getSparringChallenge();
+
+// Analyze essay
+const feedback = await analyzeEssay(essayText);
+```
   - **Description**: Analyze text for logical fallacies, hidden assumptions, and argument structure.
   - **Request Body**:
     ```json

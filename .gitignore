@@ -1,20 +1,31 @@
 # LogiCheck - Git Ignore File
 
-# Environment variables (DEPRECATED - no longer used)
-# API keys are now configured via extension Options page
+# Environment variables
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
+client/.env
+client/.env.local
+client/.env.development
+client/.env.production
 
 # Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-# Build outputs (for future React build)
+# Build outputs
 build/
 dist/
+client/dist/
+extension/dist/
+*.tsbuildinfo
 
 # IDE and Editor files
 .vscode/
@@ -22,10 +33,13 @@ dist/
 *.swp
 *.swo
 *~
+.history/
 
 # OS files
 .DS_Store
 Thumbs.db
+.AppleDouble
+.LSOverride
 
 # Extension packaging
 *.zip
@@ -35,3 +49,24 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+.tmp/
+
+# API Keys (backup)
+api-keys.txt
+secrets.txt

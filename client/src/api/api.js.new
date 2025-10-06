@@ -1,0 +1,26 @@
+/**
+ * Web Client API Adapter
+ * This file adapts the shared API for use in the web client with axios compatibility
+ */
+
+import * as sharedApi from '@shared/api/shared-api';
+
+// Re-export everything from shared API
+export const {
+  getApiBaseUrl,
+  getApiKey,
+  setApiKey,
+  removeApiKey,
+  apiRequest,
+  analyzeText,
+  getSparringChallenge,
+  verifySparringAnswer,
+  getBiasChallenge,
+  analyzeBiasHighlights,
+  analyzeEssay,
+  handleApiError,
+  API_KEY_STORAGE_KEY,
+} = sharedApi;
+
+// Default export
+export default sharedApi;

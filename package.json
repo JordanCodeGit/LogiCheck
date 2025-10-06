@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "LogiCheck - Critical Thinking & Logical Fallacy Detection Extension",
   "main": "extension/background.js",
+  "type": "module",
   "scripts": {
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
     "start:server": "cd server && npm start",
     "start:client": "cd client && npm run dev",
-    "build:client": "cd client && npm run build",
+    "build:web": "cd client && npm run build",
+    "build:extension": "vite build --config vite.config.extension.js",
+    "build:all": "npm run build:web && npm run build:extension",
+    "preview:web": "cd client && npm run preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -22,5 +26,12 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "vite": "^5.0.8"
   }
 }

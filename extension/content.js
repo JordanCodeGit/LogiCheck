@@ -368,7 +368,49 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       console.log("No text selected");
       sendResponse({ status: "no text selected" });
     }
+  } else if (request.action === "syncApiKeyFromExtension") {
+    // Sync API key changes from extension to web page
+    window.postMessage({
+      type: "LOGICHECK_API_KEY_SYNC",
+      source: "logicheck-extension",
+      apiKey: request.apiKey
+    }, "*");
+    sendResponse({ status: "synced to page" });
   }
   
   return true; // Keep the message channel open for async response
 });
+
+// Listen for messages from the web page (for syncing API key from web to extension)
+window.addEventListener("message", (event) => {
+  // Only accept messages from the same window
+  if (event.source !== window) return;
+  
+  // Check if it's a LogiCheck API key sync message
+  if (event.data.type === "LOGICHECK_API_KEY_SYNC" && event.data.source === "logicheck-web") {
+    // Forward to background script
+    chrome.runtime.sendMessage({
+      action: "syncApiKeyFromWeb",
+      apiKey: event.data.apiKey
+    }, (response) => {
+      // Notify the web page about the result
+      window.postMessage({
+        type: "LOGICHECK_API_KEY_SYNC_RESPONSE",
+        source: "logicheck-extension",
+        success: response?.status === "ok"
+      }, "*");
+    });
+  } else if (event.data.type === "LOGICHECK_GET_API_KEY" && event.data.source === "logicheck-web") {
+    // Web page is requesting the current API key from extension
+    chrome.runtime.sendMessage({
+      action: "getApiKey"
+    }, (response) => {
+      window.postMessage({
+        type: "LOGICHECK_GET_API_KEY_RESPONSE",
+        source: "logicheck-extension",
+        apiKey: response?.apiKey || null
+      }, "*");
+    });
+  }
+});
+
