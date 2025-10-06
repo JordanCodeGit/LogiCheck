@@ -111,26 +111,26 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
   return (
     <div className="flex flex-col h-full">
       {/* Article Header */}
-      <div className={`p-4 border-b-2 ${side === 'A' ? 'border-blue-500 bg-blue-50' : 'border-orange-500 bg-orange-50'}`}>
+      <div className={`p-4 border-b-2 ${side === 'A' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'} transition-colors`}>
         <div className="flex items-start justify-between mb-2">
-          <h3 className={`font-bold text-lg ${side === 'A' ? 'text-blue-900' : 'text-orange-900'}`}>
+          <h3 className={`font-bold text-lg ${side === 'A' ? 'text-blue-900 dark:text-blue-300' : 'text-orange-900 dark:text-orange-300'}`}>
             Article {side}
           </h3>
-          <span className={`text-xs px-2 py-1 rounded ${side === 'A' ? 'bg-blue-200 text-blue-800' : 'bg-orange-200 text-orange-800'}`}>
+          <span className={`text-xs px-2 py-1 rounded ${side === 'A' ? 'bg-blue-200 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200' : 'bg-orange-200 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200'}`}>
             {bias}
           </span>
         </div>
-        <p className={`text-sm font-semibold ${side === 'A' ? 'text-blue-800' : 'text-orange-800'}`}>
+        <p className={`text-sm font-semibold ${side === 'A' ? 'text-blue-800 dark:text-blue-300' : 'text-orange-800 dark:text-orange-300'}`}>
           {title}
         </p>
-        <p className={`text-xs ${side === 'A' ? 'text-blue-600' : 'text-orange-600'}`}>
+        <p className={`text-xs ${side === 'A' ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
           Source: {source}
         </p>
       </div>
 
       {/* Highlighting Tools */}
-      <div className="p-3 bg-gray-50 border-b">
-        <p className="text-xs text-gray-600 mb-2 flex items-center">
+      <div className="p-3 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700 transition-colors">
+        <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 flex items-center">
           <Highlighter className="w-3 h-3 mr-1" />
           Select text, choose category, then click "Add Highlight"
         </p>
@@ -145,8 +145,8 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
                 onClick={() => setSelectedCategory(category.id)}
                 className={`p-2 rounded-lg border-2 transition-all text-xs ${
                   selectedCategory === category.id
-                    ? `${category.borderClass} ${category.bgClass}`
-                    : 'border-gray-300 hover:border-gray-400'
+                    ? `${category.borderClass} ${category.bgClass} ${category.textClass}`
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-center space-x-1">
@@ -171,15 +171,15 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
 
       {/* Article Content */}
       <div
-        className="flex-1 p-4 overflow-y-auto text-sm leading-relaxed select-text"
+        className="flex-1 p-4 overflow-y-auto text-sm leading-relaxed select-text text-gray-900 dark:text-gray-100 transition-colors"
         onMouseUp={handleTextSelection}
         dangerouslySetInnerHTML={{ __html: getHighlightedContent() }}
       />
 
       {/* Highlights Summary */}
       {highlights.length > 0 && (
-        <div className="p-3 bg-gray-50 border-t max-h-40 overflow-y-auto">
-          <p className="text-xs font-semibold text-gray-700 mb-2">
+        <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t dark:border-gray-700 max-h-40 overflow-y-auto transition-colors">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
             Your Highlights ({highlights.length})
           </p>
           <div className="space-y-1">
@@ -188,19 +188,19 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
               return (
                 <div
                   key={highlight.id}
-                  className={`flex items-start justify-between p-2 rounded ${category.bgClass}`}
+                  className={`flex items-start justify-between p-2 rounded ${category.bgClass} dark:opacity-80`}
                 >
                   <div className="flex-1">
                     <p className={`text-xs font-medium ${category.textClass}`}>
                       {category.name}
                     </p>
-                    <p className="text-xs text-gray-700 line-clamp-1">
+                    <p className="text-xs text-gray-700 dark:text-gray-200 line-clamp-1">
                       "{highlight.text}"
                     </p>
                   </div>
                   <button
                     onClick={() => handleRemoveHighlight(highlight.id)}
-                    className="ml-2 text-gray-500 hover:text-red-600 text-xs"
+                    className="ml-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 text-xs"
                   >
                     ✕
                   </button>

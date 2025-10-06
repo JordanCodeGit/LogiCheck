@@ -7,6 +7,11 @@
 /* Client-specific customizations (must be outside @layer) */
 body {
   background-color: rgb(249 250 251); /* bg-gray-50 */
+  transition: background-color 0.3s ease;
+}
+
+.dark body {
+  background-color: rgb(17 24 39); /* bg-gray-900 */
 }
 
 /* Custom scrollbar */
@@ -19,12 +24,24 @@ body {
   background-color: rgb(243 244 246); /* bg-gray-100 */
 }
 
+.dark ::-webkit-scrollbar-track {
+  background-color: rgb(31 41 55); /* bg-gray-800 */
+}
+
 ::-webkit-scrollbar-thumb {
   background-color: rgb(156 163 175); /* bg-gray-400 */
   border-radius: 9999px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgb(75 85 99); /* bg-gray-600 */
+}
+
 ::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(107 114 128); /* bg-gray-500 */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
   background-color: rgb(107 114 128); /* bg-gray-500 */
 }
 
@@ -56,4 +73,49 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
+}
+
+/* ReactQuill Dark Mode Support */
+.dark .ql-editor.ql-blank::before {
+  color: rgb(156 163 175); /* gray-400 */
+}
+
+.dark .ql-toolbar {
+  background-color: rgb(17 24 39) !important; /* gray-900 */
+  border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+.dark .ql-container {
+  background-color: rgb(31 41 55) !important; /* gray-800 */
+  border-color: rgb(55 65 81) !important; /* gray-700 */
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+.dark .ql-editor {
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+.dark .ql-stroke {
+  stroke: rgb(209 213 219) !important; /* gray-300 */
+}
+
+.dark .ql-fill {
+  fill: rgb(209 213 219) !important; /* gray-300 */
+}
+
+.dark .ql-picker-label {
+  color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+.dark .ql-picker-options {
+  background-color: rgb(31 41 55) !important; /* gray-800 */
+  border-color: rgb(55 65 81) !important; /* gray-700 */
+}
+
+.dark .ql-picker-item {
+  color: rgb(209 213 219) !important; /* gray-300 */
+}
+
+.dark .ql-picker-item:hover {
+  background-color: rgb(55 65 81) !important; /* gray-700 */
 }

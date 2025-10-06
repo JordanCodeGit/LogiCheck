@@ -169,28 +169,28 @@ const ApiKeySettings = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-md p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 transition-colors">
         <div className="flex items-center gap-3 mb-6">
-          <Key className="w-8 h-8 text-indigo-600" />
-          <h2 className="text-2xl font-bold text-gray-800">API Key Settings</h2>
+          <Key className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">API Key Settings</h2>
         </div>
 
         <div className="mb-6">
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Enter your Gemini API key below. This key is stored <strong>locally</strong> in 
             your browser and is <strong>never uploaded</strong> to any server.
           </p>
           
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-600 p-4 mb-4 transition-colors">
             <div className="flex items-start">
-              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 mr-2" />
-              <div className="text-sm text-blue-700">
+              <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-2" />
+              <div className="text-sm text-blue-700 dark:text-blue-300">
                 <p className="font-semibold mb-1">Get your API key:</p>
                 <a 
                   href="https://aistudio.google.com/app/apikey" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="underline hover:text-blue-800"
+                  className="underline hover:text-blue-800 dark:hover:text-blue-200"
                 >
                   Google AI Studio → Create API Key
                 </a>
@@ -200,7 +200,7 @@ const ApiKeySettings = () => {
         </div>
 
         <div className="mb-6">
-          <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Gemini API Key
           </label>
           <input
@@ -209,7 +209,7 @@ const ApiKeySettings = () => {
             value={apiKey}
             onChange={handleInputChange}
             placeholder="PASTE_YOUR_GEMINI_KEY_HERE"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           />
         </div>
 
@@ -244,11 +244,11 @@ const ApiKeySettings = () => {
           <Alert type={status.type} message={status.message} />
         )}
 
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
             🔐 Security Note
           </h3>
-          <ul className="text-sm text-gray-600 space-y-2">
+          <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
             <li>• Your API key is stored only in your browser's localStorage</li>
             <li>• The key is sent directly to Google's Gemini API from your browser</li>
             <li>• LogiCheck servers never see or store your API key</li>

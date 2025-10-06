@@ -126,22 +126,22 @@ const DojoPage = () => {
         <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
           The Dojo
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
           Sharpen your logical reasoning skills through gamified practice
         </p>
       </div>
 
       {/* Stats Bar */}
-      <div className="card bg-gradient-to-r from-purple-50 to-pink-50">
+      <div className="card bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 transition-colors">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Trophy className="w-6 h-6 text-yellow-600" />
+            <Trophy className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
             <div>
-              <p className="text-sm text-gray-600">Your Progress</p>
-              <p className="font-semibold">
+              <p className="text-sm text-gray-600 dark:text-gray-300">Your Progress</p>
+              <p className="font-semibold text-gray-900 dark:text-gray-100">
                 {stats.correct} / {stats.total} Correct
                 {stats.total > 0 && (
-                  <span className="text-sm text-gray-500 ml-2">
+                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                     ({Math.round((stats.correct / stats.total) * 100)}%)
                   </span>
                 )}
@@ -149,8 +149,8 @@ const DojoPage = () => {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-600">Mastery Level</p>
-            <p className="font-semibold text-purple-600">
+            <p className="text-sm text-gray-600 dark:text-gray-300">Mastery Level</p>
+            <p className="font-semibold text-purple-600 dark:text-purple-400">
               {stats.total < 5 ? 'Novice' : stats.total < 15 ? 'Apprentice' : 'Expert'}
             </p>
           </div>
@@ -171,7 +171,7 @@ const DojoPage = () => {
             <Sword className="w-6 h-6" />
             <div className="text-left">
               <h3 className="font-semibold text-lg">Fallacy Sparring</h3>
-              <p className={`text-sm ${activeModule === 'sparring' ? 'text-purple-100' : 'text-gray-600'}`}>
+              <p className={`text-sm ${activeModule === 'sparring' ? 'text-purple-100' : 'text-gray-600 dark:text-gray-300'}`}>
                 Identify fallacies in scenarios
               </p>
             </div>
@@ -190,7 +190,7 @@ const DojoPage = () => {
             <Target className="w-6 h-6" />
             <div className="text-left">
               <h3 className="font-semibold text-lg">Bias Blindspot</h3>
-              <p className={`text-sm ${activeModule === 'bias' ? 'text-purple-100' : 'text-gray-600'}`}>
+              <p className={`text-sm ${activeModule === 'bias' ? 'text-purple-100' : 'text-gray-600 dark:text-gray-300'}`}>
                 Identify biased language
               </p>
             </div>
@@ -208,8 +208,8 @@ const DojoPage = () => {
         {activeModule === 'sparring' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold flex items-center space-x-2">
-                <Sword className="w-6 h-6 text-purple-600" />
+              <h2 className="text-2xl font-bold flex items-center space-x-2 text-gray-900 dark:text-gray-100">
+                <Sword className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 <span>Fallacy Sparring</span>
               </h2>
               {challenge && !loading && (
@@ -227,15 +227,15 @@ const DojoPage = () => {
             {challenge && !loading && (
               <div className="space-y-6">
                 {/* Scenario */}
-                <div className="bg-gray-50 p-6 rounded-xl border-l-4 border-l-purple-500">
-                  <p className="text-lg leading-relaxed text-gray-800">
+                <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border-l-4 border-l-purple-500 transition-colors">
+                  <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200">
                     {challenge.scenario}
                   </p>
                 </div>
 
                 {/* Options */}
                 <div>
-                  <p className="font-semibold mb-3 text-gray-700">
+                  <p className="font-semibold mb-3 text-gray-700 dark:text-gray-300">
                     Which logical fallacy is present in this scenario?
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -276,25 +276,25 @@ const DojoPage = () => {
                 {feedback && (
                   <div className={`p-6 rounded-xl animate-fade-in ${
                     feedback.isCorrect
-                      ? 'bg-green-50 border-l-4 border-l-green-500'
-                      : 'bg-red-50 border-l-4 border-l-red-500'
+                      ? 'bg-green-50 dark:bg-green-900/20 border-l-4 border-l-green-500'
+                      : 'bg-red-50 dark:bg-red-900/20 border-l-4 border-l-red-500'
                   }`}>
                     <div className="flex items-start space-x-3 mb-3">
                       {feedback.isCorrect ? (
-                        <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                        <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
                       ) : (
-                        <XCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+                        <XCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-1" />
                       )}
                       <div>
                         <h3 className={`font-bold text-lg mb-2 ${
-                          feedback.isCorrect ? 'text-green-800' : 'text-red-800'
+                          feedback.isCorrect ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'
                         }`}>
                           {feedback.isCorrect ? 'Correct!' : 'Not quite right'}
                         </h3>
-                        <p className="text-gray-700 leading-relaxed mb-2">
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-2">
                           <strong>Correct Answer:</strong> {feedback.correctAnswer}
                         </p>
-                        <p className="text-gray-700 leading-relaxed">
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                           {feedback.explanation}
                         </p>
                       </div>
@@ -317,8 +317,8 @@ const DojoPage = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Target className="w-6 h-6 text-purple-600" />
-                <h2 className="text-2xl font-bold">Bias Blindspot Challenge</h2>
+                <Target className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Bias Blindspot Challenge</h2>
               </div>
               {biasChallenge && !loading && (
                 <button
@@ -336,18 +336,18 @@ const DojoPage = () => {
             {biasChallenge && !loading && (
               <div className="space-y-4">
                 {/* Topic and Instructions */}
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl border-l-4 border-l-purple-500">
-                  <h3 className="font-bold text-lg mb-2 text-purple-900">
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-xl border-l-4 border-l-purple-500 transition-colors">
+                  <h3 className="font-bold text-lg mb-2 text-purple-900 dark:text-purple-300">
                     Topic: {biasChallenge.topic}
                   </h3>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
                     {biasChallenge.instructions}
                   </p>
                 </div>
 
                 {/* Legend */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="font-semibold text-sm mb-2 text-gray-700">Bias Categories:</p>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg transition-colors">
+                  <p className="font-semibold text-sm mb-2 text-gray-700 dark:text-gray-300">Bias Categories:</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 bg-red-100 border-2 border-red-500 rounded"></div>
@@ -367,7 +367,7 @@ const DojoPage = () => {
                 {/* Side-by-side Articles */}
                 <div className="grid md:grid-cols-2 gap-4">
                   {/* Article A */}
-                  <div className="border-2 border-blue-300 rounded-xl overflow-hidden shadow-lg bg-white h-[600px]">
+                  <div className="border-2 border-blue-300 dark:border-blue-600 rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-800 h-[600px] transition-colors">
                     <BiasHighlighter
                       content={biasChallenge.articleA.content}
                       title={biasChallenge.articleA.title}
@@ -379,7 +379,7 @@ const DojoPage = () => {
                   </div>
 
                   {/* Article B */}
-                  <div className="border-2 border-orange-300 rounded-xl overflow-hidden shadow-lg bg-white h-[600px]">
+                  <div className="border-2 border-orange-300 dark:border-orange-600 rounded-xl overflow-hidden shadow-lg bg-white dark:bg-gray-800 h-[600px] transition-colors">
                     <BiasHighlighter
                       content={biasChallenge.articleB.content}
                       title={biasChallenge.articleB.title}
@@ -415,9 +415,9 @@ const DojoPage = () => {
                 </div>
 
                 {/* Reflection Prompt */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl border-l-4 border-l-blue-500">
-                  <h4 className="font-semibold mb-2 text-blue-900">Reflection Questions:</h4>
-                  <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 rounded-xl border-l-4 border-l-blue-500 transition-colors">
+                  <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-300">Reflection Questions:</h4>
+                  <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
                     <li>What patterns of bias did you notice in each article?</li>
                     <li>How does each source frame the issue differently?</li>
                     <li>Which specific words or phrases reveal the author's perspective?</li>
