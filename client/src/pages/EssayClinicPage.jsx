@@ -129,8 +129,8 @@ const EssayClinicPage = () => {
           { icon: '🌊', title: 'Logical Flow', desc: 'Are there gaps or contradictions?' },
           { icon: '⚖️', title: 'Counterarguments', desc: 'Are opposing views addressed?' },
         ].map((item, index) => (
-          <div key={index} className="card text-center border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/20 transition-colors p-3">
-            <div className="text-2xl mb-1.5 text-green-600 dark:text-green-400">{item.icon}</div>
+          <div key={index} className="card text-center bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 transition-colors p-3 border border-green-100 dark:border-green-800/30">
+            <div className="text-2xl mb-1.5">{item.icon}</div>
             <h3 className="font-semibold text-xs mb-0.5 text-green-600 dark:text-green-400">{item.title}</h3>
             <p className="text-xs text-gray-600 dark:text-gray-300">{item.desc}</p>
           </div>

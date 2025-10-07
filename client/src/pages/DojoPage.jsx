@@ -215,9 +215,10 @@ const DojoPage = () => {
               {challenge && !loading && (
                 <button
                   onClick={handleNextChallenge}
-                  className="btn-secondary text-sm"
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
-                  New Challenge
+                  <RefreshCw className="w-4 h-4" />
+                  <span>New Challenge</span>
                 </button>
               )}
             </div>
@@ -246,12 +247,12 @@ const DojoPage = () => {
                         disabled={!!feedback || loading}
                         className={`p-4 rounded-lg border-2 transition-all text-left font-medium ${
                           !feedback
-                            ? 'border-gray-300 hover:border-purple-500 hover:bg-purple-50'
+                            ? 'border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/30 dark:hover:border-purple-400'
                             : feedback.correctAnswer === option
-                            ? 'border-green-500 bg-green-50 text-green-800'
+                            ? 'border-green-500 bg-green-50 text-green-800 dark:bg-green-900/30 dark:text-green-300 dark:border-green-400'
                             : selectedAnswer === option
-                            ? 'border-red-500 bg-red-50 text-red-800'
-                            : 'border-gray-200 text-gray-500'
+                            ? 'border-red-500 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-300 dark:border-red-400'
+                            : 'border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400'
                         } ${!!feedback ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                       >
                         <div className="flex items-center justify-between">
@@ -301,9 +302,10 @@ const DojoPage = () => {
                     </div>
                     <button
                       onClick={handleNextChallenge}
-                      className="btn-primary mt-4"
+                      className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 mt-4"
                     >
-                      Next Challenge
+                      <RefreshCw className="w-5 h-5" />
+                      <span>Next Challenge</span>
                     </button>
                   </div>
                 )}
@@ -315,15 +317,15 @@ const DojoPage = () => {
         {/* Bias Blindspot Module */}
         {activeModule === 'bias' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center space-x-2">
                 <Target className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Bias Blindspot Challenge</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Bias Blindspot Challenge</h2>
               </div>
               {biasChallenge && !loading && (
                 <button
                   onClick={loadBiasChallenge}
-                  className="btn-secondary text-sm flex items-center space-x-2"
+                  className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 whitespace-nowrap flex-shrink-0"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>New Topic</span>
@@ -396,8 +398,12 @@ const DojoPage = () => {
                   <button
                     onClick={handleSubmitBiasAnalysis}
                     disabled={submittingFeedback || (articleAHighlights.length === 0 && articleBHighlights.length === 0)}
-                    className={`btn-primary flex items-center space-x-2 px-8 py-3 text-lg ${
-                      (articleAHighlights.length === 0 && articleBHighlights.length === 0) ? 'opacity-50 cursor-not-allowed' : ''
+                    className={`flex items-center space-x-2 px-8 py-4 text-lg font-bold rounded-lg shadow-lg transition-all duration-200 ${
+                      (articleAHighlights.length === 0 && articleBHighlights.length === 0)
+                        ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                        : submittingFeedback
+                        ? 'bg-gradient-to-r from-purple-400 to-pink-400 text-white cursor-wait'
+                        : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white transform hover:scale-105 hover:shadow-xl'
                     }`}
                   >
                     {submittingFeedback ? (
