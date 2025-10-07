@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Highlighter, Flame, Heart, Filter } from 'lucide-react';
+import { Highlighter, Flame, Heart, Filter, Trash2 } from 'lucide-react';
 
 /**
  * BiasHighlighter Component
@@ -205,9 +205,10 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
                   </div>
                   <button
                     onClick={() => handleRemoveHighlight(highlight.id)}
-                    className="ml-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 text-xs"
+                    className="ml-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    title="Delete highlight"
                   >
-                    ✕
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               );

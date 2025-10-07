@@ -26,9 +26,9 @@
       --bg-gradient-start: #4c51bf;
       --bg-gradient-end: #5a3d8a;
       --container-bg: #1f2937;
-      --text-primary: #f3f4f6;
-      --text-secondary: #9ca3af;
-      --text-tertiary: #e5e7eb;
+      --text-primary: #f9fafb;
+      --text-secondary: #e5e7eb;
+      --text-tertiary: #f3f4f6;
       --border-color: #374151;
       --instruction-bg: #374151;
       --instruction-border: #818cf8;
@@ -61,38 +61,62 @@
     
     .header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       position: relative;
+      padding-top: 12px;
     }
 
     .theme-toggle {
-      position: absolute;
-      right: 0;
-      top: 0;
       background: var(--instruction-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 6px;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 8px 16px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
+      transition: all 0.3s ease;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px var(--shadow-color);
+      margin-top: 12px;
     }
 
     .theme-toggle:hover {
       background: var(--btn-secondary-hover);
-      transform: scale(1.05);
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px var(--shadow-color);
     }
 
     .theme-icon {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       transition: transform 0.3s ease;
+      flex-shrink: 0;
     }
 
     .theme-toggle:hover .theme-icon {
-      transform: rotate(20deg);
+      transform: rotate(180deg);
+    }
+
+    .theme-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      transition: color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .dark .theme-text {
+      color: #f9fafb;
+    }
+
+    .dark .theme-toggle {
+      border-color: #4b5563;
+      background: #2d3748;
+    }
+
+    .dark .theme-toggle:hover {
+      background: #3d4a5c;
     }
     
     .header-content {
@@ -100,6 +124,7 @@
       align-items: center;
       justify-content: center;
       margin-bottom: 8px;
+      margin-top: 8px;
     }
     
     .logo {
@@ -125,6 +150,11 @@
       line-height: 1.4;
       transition: color 0.3s ease;
     }
+
+    .dark .subtitle {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
     
     .divider {
       height: 1px;
@@ -149,12 +179,21 @@
       margin-bottom: 6px;
       transition: color 0.3s ease;
     }
+
+    .dark .instruction-title {
+      color: #f9fafb;
+      font-weight: 700;
+    }
     
     .instruction-text {
       font-size: 12px;
       color: var(--text-secondary);
       line-height: 1.5;
       transition: color 0.3s ease;
+    }
+
+    .dark .instruction-text {
+      color: #e5e7eb;
     }
     
     .btn {
@@ -198,8 +237,13 @@
     }
     
     .dark .btn-secondary {
-      color: #818cf8;
+      color: #a5b4fc;
       border-color: #818cf8;
+      font-weight: 600;
+    }
+
+    .dark .btn-secondary span {
+      color: #e0e7ff;
     }
     
     .btn-secondary:hover {
@@ -215,20 +259,22 @@
 <body>
   <div class="container">
     <div class="header">
-      <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">
-        <svg class="theme-icon sun-icon" fill="currentColor" viewBox="0 0 20 20" style="display: none; color: #f59e0b;">
-          <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
-        </svg>
-        <svg class="theme-icon moon-icon" fill="currentColor" viewBox="0 0 20 20" style="display: block; color: #6366f1;">
-          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
-        </svg>
-      </button>
-      
       <div class="header-content">
         <img src="images/logo_logicheck_extension.png" alt="LogiCheck Logo" class="logo">
         <h1 class="title">LogiCheck Lens</h1>
       </div>
       <p class="subtitle">AI-powered logical fallacy detection</p>
+      
+      <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">
+        <svg class="theme-icon sun-icon" fill="currentColor" viewBox="0 0 20 20" style="display: none; color: #fbbf24;">
+          <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+        </svg>
+        <span class="theme-text sun-text" style="display: none;">Switch to Light Mode</span>
+        <svg class="theme-icon moon-icon" fill="currentColor" viewBox="0 0 20 20" style="display: block; color: #7c3aed;">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+        </svg>
+        <span class="theme-text moon-text" style="display: block;">Switch to Dark Mode</span>
+      </button>
     </div>
 
     <div class="divider"></div>

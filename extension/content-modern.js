@@ -104,14 +104,18 @@ function injectStyles() {
     }
     
     .logicheck-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 24px;
       background: linear-gradient(135deg, var(--logicheck-gradient-start) 0%, var(--logicheck-gradient-end) 100%);
       color: white;
       box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
       transition: all 0.3s ease;
+      padding: 20px 24px;
+    }
+    
+    .logicheck-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
     }
     
     .logicheck-header-content {
@@ -121,10 +125,11 @@ function injectStyles() {
     }
     
     .logicheck-logo {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
       overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
     
     .logicheck-logo img {
@@ -147,6 +152,46 @@ function injectStyles() {
       font-size: 12px;
       color: rgba(255, 255, 255, 0.8);
       margin-top: 2px;
+    }
+    
+    .logicheck-theme-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 8px 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      white-space: nowrap;
+      width: auto;
+    }
+    
+    .logicheck-theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .logicheck-theme-icon {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+    
+    .logicheck-theme-toggle:hover .logicheck-theme-icon {
+      transform: rotate(180deg);
+    }
+    
+    .logicheck-theme-text {
+      font-size: 13px;
     }
     
     .logicheck-close-btn {
@@ -261,9 +306,20 @@ function injectStyles() {
       transition: all 0.3s ease;
     }
     
+    .logicheck-dark .logicheck-list li {
+      background: #374151;
+      border-left-color: #4b5563;
+      color: #e5e7eb;
+    }
+    
     .logicheck-list li:hover {
       border-left-color: #3b82f6;
       background: #eff6ff;
+    }
+    
+    .logicheck-dark .logicheck-list li:hover {
+      background: #1e3a5f;
+      border-left-color: #60a5fa;
     }
     
     .logicheck-fallacy {
@@ -298,6 +354,12 @@ function injectStyles() {
       transition: all 0.3s ease;
     }
     
+    .logicheck-dark .logicheck-fallacy-quote {
+      color: #d1d5db;
+      background: #111827;
+      border-left-color: #ef4444;
+    }
+    
     .logicheck-fallacy-explanation {
       color: var(--logicheck-text-secondary);
       font-size: 14px;
@@ -329,12 +391,66 @@ function injectStyles() {
       margin-left: 8px;
     }
     
+    .logicheck-selected-text {
+      color: var(--logicheck-text-tertiary);
+      font-size: 14px;
+      line-height: 1.6;
+      transition: color 0.3s ease;
+    }
+    
+    .logicheck-dark .logicheck-selected-text {
+      color: #d1d5db;
+    }
+    
+    .logicheck-error-section {
+      background: #fee2e2;
+      border-color: #fecaca;
+    }
+    
+    .logicheck-dark .logicheck-error-section {
+      background: #7f1d1d;
+      border-color: #991b1b;
+    }
+    
+    .logicheck-error-title {
+      color: #dc2626 !important;
+    }
+    
+    .logicheck-dark .logicheck-error-title {
+      color: #fca5a5 !important;
+    }
+    
+    .logicheck-error-message {
+      color: #991b1b;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .logicheck-dark .logicheck-error-message {
+      color: #fecaca;
+    }
+    
+    .logicheck-error-help {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    
+    .logicheck-dark .logicheck-error-help {
+      color: #d1d5db;
+    }
+    
     .logicheck-loading {
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 40px;
-      color: #6b7280;
+      color: var(--logicheck-text-tertiary);
+      transition: color 0.3s ease;
+    }
+    
+    .logicheck-dark .logicheck-loading {
+      color: #d1d5db;
     }
     
     .logicheck-spinner {
@@ -345,6 +461,12 @@ function injectStyles() {
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-right: 12px;
+      transition: border-color 0.3s ease;
+    }
+    
+    .logicheck-dark .logicheck-spinner {
+      border: 3px solid #374151;
+      border-top: 3px solid #60a5fa;
     }
     
     @keyframes spin {
@@ -444,16 +566,28 @@ function createSidebar(data) {
   sidebarRoot.innerHTML = `
     <div class="logicheck-sidebar">
       <div class="logicheck-header">
-        <div class="logicheck-header-content">
-          <div class="logicheck-logo">
-            <img src="${chrome.runtime.getURL('images/logo_logicheck_extension.png')}" alt="LogiCheck Logo">
+        <div class="logicheck-header-top">
+          <div class="logicheck-header-content">
+            <div class="logicheck-logo">
+              <img src="${chrome.runtime.getURL('images/logo_logicheck_extension.png')}" alt="LogiCheck Logo">
+            </div>
+            <div>
+              <h2>LogiCheck Analysis</h2>
+              <div class="logicheck-subtitle">Logical reasoning insights</div>
+            </div>
           </div>
-          <div>
-            <h2>LogiCheck Analysis</h2>
-            <div class="logicheck-subtitle">Logical reasoning insights</div>
-          </div>
+          <button class="logicheck-close-btn">✕</button>
         </div>
-        <button class="logicheck-close-btn">✕</button>
+        <button class="logicheck-theme-toggle" title="Toggle dark mode">
+          <svg class="logicheck-theme-icon logicheck-sun-icon" fill="currentColor" viewBox="0 0 20 20" style="display: none; color: #fbbf24;">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
+          </svg>
+          <span class="logicheck-theme-text logicheck-sun-text" style="display: none;">Switch to Light Mode</span>
+          <svg class="logicheck-theme-icon logicheck-moon-icon" fill="currentColor" viewBox="0 0 20 20" style="display: block; color: #e0f2fe;">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+          </svg>
+          <span class="logicheck-theme-text logicheck-moon-text" style="display: block;">Switch to Dark Mode</span>
+        </button>
       </div>
       
       <div class="logicheck-content">
@@ -468,7 +602,29 @@ function createSidebar(data) {
   chrome.storage.sync.get(['theme'], (result) => {
     const theme = result.theme || 'light';
     applySidebarTheme(theme);
+    updateSidebarThemeIcons(theme);
   });
+  
+  // Add theme toggle listener
+  const themeToggleBtn = sidebarRoot.querySelector('.logicheck-theme-toggle');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+      chrome.storage.sync.get(['theme'], (result) => {
+        const currentTheme = result.theme || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        chrome.storage.sync.set({ theme: newTheme }, () => {
+          applySidebarTheme(newTheme);
+          updateSidebarThemeIcons(newTheme);
+          
+          // Notify other tabs about theme change
+          chrome.runtime.sendMessage({
+            action: 'broadcastThemeChange',
+            theme: newTheme
+          });
+        });
+      });
+    });
+  }
   
   // Make close function available via event listener instead of inline onclick
   const closeBtn = sidebarRoot.querySelector('.logicheck-close-btn');
@@ -481,21 +637,23 @@ function createSidebar(data) {
 
 // Create loading content
 function createLoadingContent(selectedText) {
-  let html = `
+  let html = '';
+  
+  if (selectedText) {
+    html += `
+      <div class="logicheck-section" style="margin-bottom: 20px;">
+        <h3>Selected Text:</h3>
+        <p class="logicheck-selected-text">${selectedText.substring(0, 200)}${selectedText.length > 200 ? '...' : ''}</p>
+      </div>
+    `;
+  }
+  
+  html += `
     <div class="logicheck-loading">
       <div class="logicheck-spinner"></div>
       <span>Analyzing text...</span>
     </div>
   `;
-  
-  if (selectedText) {
-    html += `
-      <div class="logicheck-section" style="margin-top: 20px;">
-        <h3>Selected Text:</h3>
-        <p style="color: #6b7280; font-size: 14px;">${selectedText.substring(0, 200)}${selectedText.length > 200 ? '...' : ''}</p>
-      </div>
-    `;
-  }
   
   return html;
 }
@@ -503,13 +661,13 @@ function createLoadingContent(selectedText) {
 // Create error content
 function createErrorContent(errorMessage) {
   return `
-    <div class="logicheck-section" style="background: #fee2e2; border-color: #fecaca;">
-      <h3 style="color: #dc2626;">
+    <div class="logicheck-section logicheck-error-section">
+      <h3 class="logicheck-error-title">
         <span class="logicheck-section-icon">⚠️</span>
         Analysis Error
       </h3>
-      <p style="color: #991b1b;">${errorMessage}</p>
-      <p style="color: #6b7280; font-size: 13px; margin-top: 12px;">
+      <p class="logicheck-error-message">${errorMessage}</p>
+      <p class="logicheck-error-help">
         Please check your API key configuration in the extension options and try again.
       </p>
     </div>
@@ -645,6 +803,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'themeChanged') {
     // Apply theme change to sidebar
     applySidebarTheme(request.theme);
+    updateSidebarThemeIcons(request.theme);
     sendResponse({ status: 'theme applied' });
     return true;
   }
@@ -748,6 +907,27 @@ function applySidebarTheme(theme) {
     } else {
       sidebar.classList.remove('logicheck-dark');
     }
+  }
+}
+
+// Update theme icons in sidebar
+function updateSidebarThemeIcons(theme) {
+  const sidebarRoot = document.getElementById('logicheck-sidebar-root');
+  const sunIcon = sidebarRoot?.querySelector('.logicheck-sun-icon');
+  const moonIcon = sidebarRoot?.querySelector('.logicheck-moon-icon');
+  const sunText = sidebarRoot?.querySelector('.logicheck-sun-text');
+  const moonText = sidebarRoot?.querySelector('.logicheck-moon-text');
+  
+  if (theme === 'dark') {
+    if (sunIcon) sunIcon.style.display = 'block';
+    if (moonIcon) moonIcon.style.display = 'none';
+    if (sunText) sunText.style.display = 'block';
+    if (moonText) moonText.style.display = 'none';
+  } else {
+    if (sunIcon) sunIcon.style.display = 'none';
+    if (moonIcon) moonIcon.style.display = 'block';
+    if (sunText) sunText.style.display = 'none';
+    if (moonText) moonText.style.display = 'block';
   }
 }
 

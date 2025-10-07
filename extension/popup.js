@@ -13,15 +13,21 @@ function applyTheme(theme) {
   const html = document.documentElement;
   const sunIcon = document.querySelector('.sun-icon');
   const moonIcon = document.querySelector('.moon-icon');
+  const sunText = document.querySelector('.sun-text');
+  const moonText = document.querySelector('.moon-text');
   
   if (theme === 'dark') {
     html.classList.add('dark');
     if (sunIcon) sunIcon.style.display = 'block';
     if (moonIcon) moonIcon.style.display = 'none';
+    if (sunText) sunText.style.display = 'block';
+    if (moonText) moonText.style.display = 'none';
   } else {
     html.classList.remove('dark');
     if (sunIcon) sunIcon.style.display = 'none';
     if (moonIcon) moonIcon.style.display = 'block';
+    if (sunText) sunText.style.display = 'none';
+    if (moonText) moonText.style.display = 'block';
   }
   
   // Save theme preference
