@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test LogiCheck Extension</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-content {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>LogiCheck Extension Test Page</h1>
+    
+    <div class="instructions">
+        <h3>Testing Instructions:</h3>
+        <ol>
+            <li>Load this extension in Chrome developer mode</li>
+            <li>Select any text below</li>
+            <li>Right-click and choose "Analyze with LogiCheck" from context menu</li>
+            <li>OR click the extension icon in toolbar to open popup</li>
+            <li>Configure API key in options if needed</li>
+        </ol>
+    </div>
+
+    <div class="test-content">
+        <h2>Sample Text with Logical Fallacies</h2>
+        <p>
+            Everyone I know loves this new smartphone, so it must be the best phone on the market. 
+            This is clearly an example of <span class="highlight">argumentum ad populum</span> or appeal to popularity fallacy.
+        </p>
+        
+        <p>
+            If we allow students to retake exams, next they'll want to retake entire courses, 
+            then they'll expect to graduate without doing any work at all. This demonstrates a 
+            <span class="highlight">slippery slope fallacy</span>.
+        </p>
+        
+        <p>
+            My opponent's argument about climate change is invalid because he was caught 
+            speeding last week. This is an example of <span class="highlight">ad hominem fallacy</span>.
+        </p>
+        
+        <p>
+            Either you support our new tax policy completely, or you hate progress and want 
+            our society to fail. This shows a <span class="highlight">false dilemma fallacy</span>.
+        </p>
+    </div>
+
+    <div class="test-content">
+        <h2>Valid Logical Argument</h2>
+        <p>
+            All humans are mortal. Socrates is human. Therefore, Socrates is mortal. 
+            This is a valid syllogistic argument with true premises leading to a true conclusion.
+        </p>
+    </div>
+
+    <div class="instructions">
+        <h3>Extension Features to Test:</h3>
+        <ul>
+            <li>✅ Popup opens when clicking extension icon</li>
+            <li>✅ Context menu "Analyze with LogiCheck" appears on text selection</li>
+            <li>✅ Sidebar appears when analyzing text via context menu</li>
+            <li>✅ API key configuration in options page</li>
+            <li>✅ Keyboard shortcut Ctrl+Shift+L (or Cmd+Shift+L on Mac)</li>
+        </ul>
+    </div>
+
+    <script>
+        // Add some interactivity for testing
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('LogiCheck test page loaded');
+            console.log('Extension should be available in browser toolbar');
+            
+            // Test if extension is loaded
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                console.log('Chrome extension APIs available');
+            }
+        });
+    </script>
+</body>
+</html>

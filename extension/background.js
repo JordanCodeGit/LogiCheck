@@ -204,8 +204,31 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
-// Listen for messages from content script
+// Listen for messages from content script, popup, and options page
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Handle popup analysis request
+  if (request.action === "analyzeText") {
+    const selectedText = request.text;
+    
+    // Analyze the text asynchronously
+    analyzeTextWithGoogleAI(selectedText).then((result) => {
+      sendResponse({
+        success: result.success,
+        result: result.data,
+        error: result.error
+      });
+    }).catch((error) => {
+      console.error('Error analyzing text:', error);
+      sendResponse({
+        success: false,
+        error: error.message
+      });
+    });
+    
+    return true; // Keep the message channel open for async response
+  }
+  
+  // Handle content script analysis request
   if (request.action === "analyzeSelectedText") {
     const selectedText = request.text;
     
@@ -231,11 +254,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     
     return true; // Keep the message channel open for async response
   }
-  return true;
-});
-
-// Support setting the API key at runtime (from an options page or dev console)
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  
+  // Support setting the API key at runtime (from an options page or dev console)
   if (request.action === 'setApiKey' && request.key) {
     try {
       if (chrome && chrome.storage && chrome.storage.local) {
