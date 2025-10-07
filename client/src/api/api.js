@@ -22,12 +22,15 @@ const getApiKey = () => {
 /**
  * Analyze text for logical fallacies and reasoning
  * @param {string} text - The text to analyze
+ * @param {AbortSignal} signal - Optional abort signal for cancelling the request
  * @returns {Promise} API response
  */
-export const analyzeText = async (text) => {
+export const analyzeText = async (text, signal = null) => {
   try {
     const apiKey = getApiKey();
-    const response = await api.post('/analyze', { text, apiKey });
+    const response = await api.post('/analyze', { text, apiKey }, {
+      signal: signal
+    });
     return response.data;
   } catch (error) {
     throw handleApiError(error);
@@ -91,12 +94,15 @@ export const analyzeBiasHighlights = async (data) => {
 /**
  * Analyze an essay for argumentative quality
  * @param {string} essayText - The essay to analyze
+ * @param {AbortSignal} signal - Optional abort signal for cancelling the request
  * @returns {Promise} Analysis with annotations
  */
-export const analyzeEssay = async (essayText) => {
+export const analyzeEssay = async (essayText, signal = null) => {
   try {
     const apiKey = getApiKey();
-    const response = await api.post('/clinic/analyze-essay', { essayText, apiKey });
+    const response = await api.post('/clinic/analyze-essay', { essayText, apiKey }, {
+      signal: signal
+    });
     return response.data;
   } catch (error) {
     throw handleApiError(error);
@@ -122,6 +128,13 @@ export const checkHealth = async () => {
  * @returns {Error} Formatted error
  */
 const handleApiError = (error) => {
+  // Handle abort errors
+  if (error.name === 'AbortError' || error.code === 'ERR_CANCELED') {
+    const abortError = new Error('Analysis cancelled');
+    abortError.name = 'AbortError';
+    return abortError;
+  }
+  
   if (error.response) {
     // Server responded with error
     const message = error.response.data?.error?.message || 'An error occurred';

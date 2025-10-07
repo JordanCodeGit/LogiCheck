@@ -1,17 +1,78 @@
 // Popup script for LogiCheck Lens
 console.log('Popup script loaded');
 
+// Theme management
+function initTheme() {
+  chrome.storage.sync.get(['theme'], (result) => {
+    const theme = result.theme || 'light';
+    applyTheme(theme);
+  });
+}
+
+function applyTheme(theme) {
+  const html = document.documentElement;
+  const sunIcon = document.querySelector('.sun-icon');
+  const moonIcon = document.querySelector('.moon-icon');
+  
+  if (theme === 'dark') {
+    html.classList.add('dark');
+    if (sunIcon) sunIcon.style.display = 'block';
+    if (moonIcon) moonIcon.style.display = 'none';
+  } else {
+    html.classList.remove('dark');
+    if (sunIcon) sunIcon.style.display = 'none';
+    if (moonIcon) moonIcon.style.display = 'block';
+  }
+  
+  // Save theme preference
+  chrome.storage.sync.set({ theme });
+  
+  // Notify content scripts about theme change
+  chrome.tabs.query({}, (tabs) => {
+    tabs.forEach(tab => {
+      chrome.tabs.sendMessage(tab.id, { action: 'themeChanged', theme }, () => {
+        // Ignore errors for tabs where content script isn't loaded
+        if (chrome.runtime.lastError) {
+          // Silent fail - this is expected for some tabs
+        }
+      });
+    });
+  });
+}
+
+function toggleTheme() {
+  chrome.storage.sync.get(['theme'], (result) => {
+    const currentTheme = result.theme || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    applyTheme(newTheme);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded');
+
+  // Initialize theme
+  initTheme();
 
   // Get button elements
   const analyzeBtn = document.getElementById('analyzeSelected');
   const settingsBtn = document.getElementById('openSettings');
   const websiteBtn = document.getElementById('openWebsite');
+  const themeToggleBtn = document.getElementById('themeToggle');
 
   console.log('Analyze button:', analyzeBtn);
   console.log('Settings button:', settingsBtn);
   console.log('Website button:', websiteBtn);
+  console.log('Theme toggle button:', themeToggleBtn);
+
+  // Theme Toggle Button
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+      console.log('Theme toggle clicked');
+      toggleTheme();
+    });
+    console.log('Theme toggle listener attached');
+  }
 
   // Analyze Selected Text Button
   if (analyzeBtn) {

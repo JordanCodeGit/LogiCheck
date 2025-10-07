@@ -27,6 +27,52 @@ function injectStyles() {
   const styleElement = document.createElement('style');
   styleElement.id = 'logicheck-styles';
   styleElement.textContent = `
+    :root {
+      --logicheck-bg-sidebar: #ffffff;
+      --logicheck-bg-header: #4a5568;
+      --logicheck-bg-header-border: #2d3748;
+      --logicheck-bg-content: #f7fafc;
+      --logicheck-bg-section: #ffffff;
+      --logicheck-text-primary: #1a202c;
+      --logicheck-text-secondary: #2d3748;
+      --logicheck-text-tertiary: #4a5568;
+      --logicheck-border-section: #4a5568;
+      --logicheck-fallacy-bg: #fff5f5;
+      --logicheck-fallacy-border: #f56565;
+      --logicheck-fallacy-text: #c53030;
+      --logicheck-fallacy-quote-bg: #ffffff;
+      --logicheck-fallacy-quote-border: #feb2b2;
+      --logicheck-socratic-bg: #ebf8ff;
+      --logicheck-socratic-border: #4299e1;
+      --logicheck-scrollbar-track: #e2e8f0;
+      --logicheck-scrollbar-thumb: #a0aec0;
+      --logicheck-scrollbar-thumb-hover: #718096;
+      --logicheck-shadow: rgba(0, 0, 0, 0.2);
+    }
+
+    .logicheck-dark {
+      --logicheck-bg-sidebar: #1f2937;
+      --logicheck-bg-header: #374151;
+      --logicheck-bg-header-border: #4b5563;
+      --logicheck-bg-content: #111827;
+      --logicheck-bg-section: #1f2937;
+      --logicheck-text-primary: #f3f4f6;
+      --logicheck-text-secondary: #e5e7eb;
+      --logicheck-text-tertiary: #d1d5db;
+      --logicheck-border-section: #818cf8;
+      --logicheck-fallacy-bg: #7f1d1d;
+      --logicheck-fallacy-border: #ef4444;
+      --logicheck-fallacy-text: #fca5a5;
+      --logicheck-fallacy-quote-bg: #991b1b;
+      --logicheck-fallacy-quote-border: #dc2626;
+      --logicheck-socratic-bg: #1e3a5f;
+      --logicheck-socratic-border: #60a5fa;
+      --logicheck-scrollbar-track: #374151;
+      --logicheck-scrollbar-thumb: #4b5563;
+      --logicheck-scrollbar-thumb-hover: #6b7280;
+      --logicheck-shadow: rgba(0, 0, 0, 0.4);
+    }
+
     #logicheck-sidebar-root {
       position: fixed;
       top: 0;
@@ -34,17 +80,19 @@ function injectStyles() {
       width: 350px;
       height: 100vh;
       z-index: 2147483647;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+      box-shadow: -2px 0 10px var(--logicheck-shadow);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      transition: box-shadow 0.3s ease;
     }
     
     .logicheck-sidebar {
       width: 100%;
       height: 100%;
-      background-color: #ffffff;
+      background-color: var(--logicheck-bg-sidebar);
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      transition: background-color 0.3s ease;
     }
     
     .logicheck-header {
@@ -52,9 +100,10 @@ function injectStyles() {
       justify-content: space-between;
       align-items: center;
       padding: 16px 20px;
-      background-color: #4a5568;
+      background-color: var(--logicheck-bg-header);
       color: white;
-      border-bottom: 2px solid #2d3748;
+      border-bottom: 2px solid var(--logicheck-bg-header-border);
+      transition: all 0.3s ease;
     }
     
     .logicheck-header h2 {
@@ -87,32 +136,36 @@ function injectStyles() {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
-      background-color: #f7fafc;
+      background-color: var(--logicheck-bg-content);
+      transition: background-color 0.3s ease;
     }
     
     .logicheck-section {
       margin-bottom: 24px;
-      background-color: white;
+      background-color: var(--logicheck-bg-section);
       padding: 16px;
       border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px var(--logicheck-shadow);
+      transition: all 0.3s ease;
     }
     
     .logicheck-section h3 {
       margin: 0 0 12px 0;
       font-size: 16px;
       font-weight: 600;
-      color: #2d3748;
-      border-bottom: 2px solid #4a5568;
+      color: var(--logicheck-text-secondary);
+      border-bottom: 2px solid var(--logicheck-border-section);
       padding-bottom: 8px;
+      transition: all 0.3s ease;
     }
     
     .main-claim {
       margin: 0;
       font-size: 14px;
       line-height: 1.6;
-      color: #1a202c;
+      color: var(--logicheck-text-primary);
       font-weight: 500;
+      transition: color 0.3s ease;
     }
     
     .assumptions-list {
@@ -125,15 +178,17 @@ function injectStyles() {
       margin-bottom: 8px;
       font-size: 14px;
       line-height: 1.5;
-      color: #2d3748;
+      color: var(--logicheck-text-secondary);
+      transition: color 0.3s ease;
     }
     
     .fallacy-card {
       padding: 12px;
-      background-color: #fff5f5;
-      border-left: 4px solid #f56565;
+      background-color: var(--logicheck-fallacy-bg);
+      border-left: 4px solid var(--logicheck-fallacy-border);
       border-radius: 4px;
       margin-bottom: 12px;
+      transition: all 0.3s ease;
     }
     
     .fallacy-card:last-child {
@@ -144,36 +199,40 @@ function injectStyles() {
       margin: 0 0 8px 0;
       font-size: 15px;
       font-weight: 600;
-      color: #c53030;
+      color: var(--logicheck-fallacy-text);
+      transition: color 0.3s ease;
     }
     
     .fallacy-quote {
       margin: 0 0 8px 0;
       padding: 8px 12px;
-      background-color: white;
-      border-left: 3px solid #feb2b2;
+      background-color: var(--logicheck-fallacy-quote-bg);
+      border-left: 3px solid var(--logicheck-fallacy-quote-border);
       font-style: italic;
       font-size: 13px;
-      color: #4a5568;
+      color: var(--logicheck-text-tertiary);
+      transition: all 0.3s ease;
     }
     
     .fallacy-explanation {
       margin: 0;
       font-size: 13px;
       line-height: 1.5;
-      color: #2d3748;
+      color: var(--logicheck-text-secondary);
+      transition: color 0.3s ease;
     }
     
     .socratic-question {
       margin: 0;
       font-size: 14px;
       line-height: 1.6;
-      color: #2d3748;
+      color: var(--logicheck-text-secondary);
       font-style: italic;
       padding: 12px;
-      background-color: #ebf8ff;
-      border-left: 4px solid #4299e1;
+      background-color: var(--logicheck-socratic-bg);
+      border-left: 4px solid var(--logicheck-socratic-border);
       border-radius: 4px;
+      transition: all 0.3s ease;
     }
     
     .logicheck-content::-webkit-scrollbar {
@@ -181,16 +240,18 @@ function injectStyles() {
     }
     
     .logicheck-content::-webkit-scrollbar-track {
-      background: #e2e8f0;
+      background: var(--logicheck-scrollbar-track);
+      transition: background 0.3s ease;
     }
     
     .logicheck-content::-webkit-scrollbar-thumb {
-      background: #a0aec0;
+      background: var(--logicheck-scrollbar-thumb);
       border-radius: 4px;
+      transition: background 0.3s ease;
     }
     
     .logicheck-content::-webkit-scrollbar-thumb:hover {
-      background: #718096;
+      background: var(--logicheck-scrollbar-thumb-hover);
     }
   `;
   document.head.appendChild(styleElement);
@@ -249,11 +310,35 @@ if (!sidebarContainer) {
 // Inject styles
 injectStyles();
 
+// Apply theme to sidebar
+function applySidebarTheme(theme) {
+  const sidebar = sidebarContainer?.querySelector('.logicheck-sidebar');
+  if (sidebar) {
+    if (theme === 'dark') {
+      sidebar.classList.add('logicheck-dark');
+    } else {
+      sidebar.classList.remove('logicheck-dark');
+    }
+  }
+}
+
+// Initialize theme from storage
+chrome.storage.sync.get(['theme'], (result) => {
+  const theme = result.theme || 'light';
+  applySidebarTheme(theme);
+});
+
 // Function to show sidebar with analysis data
 function showSidebar(analysisData = mockAnalysisData) {
   // Render the sidebar HTML
   sidebarContainer.innerHTML = createSidebarHTML(analysisData);
   sidebarContainer.style.display = 'block';
+  
+  // Apply current theme after rendering
+  chrome.storage.sync.get(['theme'], (result) => {
+    const theme = result.theme || 'light';
+    applySidebarTheme(theme);
+  });
 }
 
 // Function to show loading state
@@ -279,6 +364,12 @@ function showLoadingState() {
     </style>
   `;
   sidebarContainer.style.display = 'block';
+  
+  // Apply current theme after rendering
+  chrome.storage.sync.get(['theme'], (result) => {
+    const theme = result.theme || 'light';
+    applySidebarTheme(theme);
+  });
 }
 
 // Function to show error state
@@ -325,6 +416,12 @@ function showErrorState(errorMessage) {
     </div>
   `;
   sidebarContainer.style.display = 'block';
+  
+  // Apply current theme after rendering
+  chrome.storage.sync.get(['theme'], (result) => {
+    const theme = result.theme || 'light';
+    applySidebarTheme(theme);
+  });
 }
 
 // Function to hide sidebar
@@ -334,7 +431,11 @@ function hideSidebar() {
 
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "showLoading") {
+  if (request.action === "themeChanged") {
+    // Apply theme change to sidebar
+    applySidebarTheme(request.theme);
+    sendResponse({ status: "theme applied" });
+  } else if (request.action === "showLoading") {
     // Show loading state
     console.log("Showing loading state for text:", request.text);
     showLoadingState();
