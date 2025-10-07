@@ -43,6 +43,7 @@ Thumbs.db
 
 # Extension packaging
 *.zip
+!client/public/logicheck-extension.zip
 *.crx
 *.pem
 
