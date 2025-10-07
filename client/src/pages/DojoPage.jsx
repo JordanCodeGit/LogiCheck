@@ -1,34 +1,52 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Sword, Trophy, Target, CheckCircle, XCircle, RefreshCw, Send } from 'lucide-react';
 import { getSparringChallenge, verifySparringAnswer, getBiasChallenge, analyzeBiasHighlights } from '../api/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
 import BiasHighlighter from '../components/BiasHighlighter';
 import BiasFeedback from '../components/BiasFeedback';
+import { useDojo } from '../contexts/DojoContext';
 
 const DojoPage = () => {
-  const [activeModule, setActiveModule] = useState('sparring'); // 'sparring' or 'bias'
-  const [challenge, setChallenge] = useState(null);
-  const [biasChallenge, setBiasChallenge] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [feedback, setFeedback] = useState(null);
-  const [stats, setStats] = useState({ total: 0, correct: 0 });
-  
-  // Bias challenge state
-  const [articleAHighlights, setArticleAHighlights] = useState([]);
-  const [articleBHighlights, setArticleBHighlights] = useState([]);
-  const [biasFeedback, setBiasFeedback] = useState(null);
-  const [submittingFeedback, setSubmittingFeedback] = useState(false);
+  const {
+    activeModule,
+    setActiveModule,
+    challenge,
+    setChallenge,
+    biasChallenge,
+    setBiasChallenge,
+    loading,
+    setLoading,
+    error,
+    setError,
+    selectedAnswer,
+    setSelectedAnswer,
+    feedback,
+    setFeedback,
+    stats,
+    setStats,
+    articleAHighlights,
+    setArticleAHighlights,
+    articleBHighlights,
+    setArticleBHighlights,
+    biasFeedback,
+    setBiasFeedback,
+    submittingFeedback,
+    setSubmittingFeedback,
+  } = useDojo();
 
+  // Load initial challenges only once when component mounts
   useEffect(() => {
-    if (activeModule === 'sparring') {
+    // Load sparring challenge if on sparring module and no challenge exists
+    if (activeModule === 'sparring' && !challenge) {
       loadNewChallenge();
-    } else if (activeModule === 'bias') {
+    }
+    // Load bias challenge if on bias module and no challenge exists
+    if (activeModule === 'bias' && !biasChallenge) {
       loadBiasChallenge();
     }
-  }, [activeModule]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeModule, challenge, biasChallenge]);
 
   const loadNewChallenge = async () => {
     setLoading(true);
@@ -376,6 +394,7 @@ const DojoPage = () => {
                       source={biasChallenge.articleA.source}
                       bias={biasChallenge.articleA.bias}
                       side="A"
+                      initialHighlights={articleAHighlights}
                       onHighlightsChange={setArticleAHighlights}
                     />
                   </div>
@@ -388,6 +407,7 @@ const DojoPage = () => {
                       source={biasChallenge.articleB.source}
                       bias={biasChallenge.articleB.bias}
                       side="B"
+                      initialHighlights={articleBHighlights}
                       onHighlightsChange={setArticleBHighlights}
                     />
                   </div>

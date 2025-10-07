@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Sparkles, Brain } from 'lucide-react';
 import { analyzeText } from '../api/api';
 import { hasApiKey } from '../utils/apiKeyUtils';
@@ -6,13 +5,21 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
 import FallacyCard from '../components/FallacyCard';
 import ApiKeyWarning from '../components/ApiKeyWarning';
+import { useAnalyzer } from '../contexts/AnalyzerContext';
 
 const AnalyzerPage = () => {
-  const [inputText, setInputText] = useState('');
-  const [analysis, setAnalysis] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [abortController, setAbortController] = useState(null);
+  const {
+    inputText,
+    setInputText,
+    analysis,
+    setAnalysis,
+    loading,
+    setLoading,
+    error,
+    setError,
+    abortController,
+    setAbortController,
+  } = useAnalyzer();
 
   const handleAnalyze = async () => {
     if (!inputText.trim()) {

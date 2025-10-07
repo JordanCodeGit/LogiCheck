@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Highlighter, Flame, Heart, Filter } from 'lucide-react';
 
 /**
@@ -6,10 +6,15 @@ import { Highlighter, Flame, Heart, Filter } from 'lucide-react';
  * Allows users to highlight text with different bias categories
  * Categories: Loaded Language, Emotional Appeals, Biased Framing
  */
-const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChange }) => {
-  const [highlights, setHighlights] = useState([]);
+const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChange, initialHighlights = [] }) => {
+  const [highlights, setHighlights] = useState(initialHighlights);
   const [selectedCategory, setSelectedCategory] = useState('loaded'); // 'loaded', 'emotional', 'framing'
   const [selectedText, setSelectedText] = useState('');
+
+  // Sync with initialHighlights when they change
+  useEffect(() => {
+    setHighlights(initialHighlights);
+  }, [initialHighlights]);
 
   const categories = [
     {

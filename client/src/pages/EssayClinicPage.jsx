@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { FileText, Lightbulb, AlertCircle } from 'lucide-react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -7,14 +6,23 @@ import { hasApiKey } from '../utils/apiKeyUtils';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Alert from '../components/Alert';
 import ApiKeyWarning from '../components/ApiKeyWarning';
+import { useEssayClinic } from '../contexts/EssayClinicContext';
 
 const EssayClinicPage = () => {
-  const [essayText, setEssayText] = useState('');
-  const [annotations, setAnnotations] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedAnnotation, setSelectedAnnotation] = useState(null);
-  const [abortController, setAbortController] = useState(null);
+  const {
+    essayText,
+    setEssayText,
+    annotations,
+    setAnnotations,
+    selectedAnnotation,
+    setSelectedAnnotation,
+    loading,
+    setLoading,
+    error,
+    setError,
+    abortController,
+    setAbortController,
+  } = useEssayClinic();
 
   const handleAnalyze = async () => {
     if (!essayText.trim()) {
