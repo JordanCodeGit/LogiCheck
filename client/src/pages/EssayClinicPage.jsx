@@ -24,8 +24,22 @@ const EssayClinicPage = () => {
     setAbortController,
   } = useEssayClinic();
 
+  // Helper function to strip HTML tags and get plain text
+  const getPlainText = (html) => {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    return temp.textContent || temp.innerText || '';
+  };
+
+  // Get character count of plain text
+  const getCharacterCount = () => {
+    return getPlainText(essayText).length;
+  };
+
   const handleAnalyze = async () => {
-    if (!essayText.trim()) {
+    const plainText = getPlainText(essayText);
+    
+    if (!plainText.trim()) {
       setError('Please enter your essay text');
       return;
     }
@@ -45,7 +59,8 @@ const EssayClinicPage = () => {
     setSelectedAnnotation(null);
 
     try {
-      const result = await analyzeEssay(essayText, controller.signal);
+      // Send plain text to API
+      const result = await analyzeEssay(plainText, controller.signal);
       setAnnotations(result.annotations || []);
     } catch (err) {
       if (err.name === 'AbortError' || err.message === 'Analysis cancelled') {
@@ -155,7 +170,7 @@ const EssayClinicPage = () => {
               <span>Your Essay</span>
             </h2>
             <span className="text-xs text-green-600 dark:text-green-400">
-              {essayText.length} characters
+              {getCharacterCount()} characters
             </span>
           </div>
 
@@ -174,7 +189,7 @@ const EssayClinicPage = () => {
             {!loading ? (
               <button
                 onClick={handleAnalyze}
-                disabled={!essayText.trim()}
+                disabled={!getPlainText(essayText).trim()}
                 className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white text-base px-6 py-2.5 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 Start Analyzing

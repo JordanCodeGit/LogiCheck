@@ -19,10 +19,10 @@ LogiCheck sekarang menyediakan opsi **Shared API Keys** untuk memudahkan penggun
 ## Shared API Keys yang Tersedia
 
 ```javascript
-Key 1: AIzaSyDfRha-Fa2HcEO_iLSKv8EpTklKud6hhi8
-Key 2: AIzaSyDfRha-Fa2HcEO_iLSKv8EpTklKud6hhi8
-Key 3: AIzaSyBdb8YgwUjjt8Ucd20kHP0IoTKtejytsUU
-Key 4: AIzaSyDV6bL_YFF6qdPHTIP37EIhV2jeUnYBaHo
+Key 1: AIzaSyArBF81CMgCMZqJgNT7VDRht0ZSspE6hsw
+Key 2: AIzaSyAAl4cJixWRfBXok8XAqDwM5iYfrsd7u8k
+Key 3: AIzaSyC4GwEs8cCpzv-BXz8SUdy80ZP-MSoJrBE
+Key 4: AIzaSyCHfp1JVlsZRKvvCjQcgYC7BTiGDd9-neU
 ```
 
 ## User Experience

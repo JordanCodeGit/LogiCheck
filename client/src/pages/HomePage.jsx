@@ -61,16 +61,16 @@ const HomePage = () => {
         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
           Your Conversational AI Coach for Sharpening Logical Reasoning in an Era of Mass Information
         </p>
-        <div className="flex justify-center space-x-4">
+        <div className="flex flex-col md:flex-row justify-center gap-4 max-w-md md:max-w-none mx-auto">
           <Link
             to="/analyzer"
-            className="inline-block bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-lg px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all font-medium"
+            className="inline-block bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-lg px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all font-medium text-center"
           >
             Start Analyzing
           </Link>
           <Link
             to="/extension"
-            className="inline-block bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white text-lg px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all font-medium"
+            className="inline-block bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white text-lg px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all font-medium text-center"
           >
             Download Our Extension
           </Link>

@@ -58,6 +58,14 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
     }
   };
 
+  // Handle touch selection for mobile devices
+  const handleTouchEnd = () => {
+    // Small delay to ensure selection is complete
+    setTimeout(() => {
+      handleTextSelection();
+    }, 100);
+  };
+
   const handleAddHighlight = () => {
     if (selectedText) {
       const newHighlight = {
@@ -178,6 +186,8 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
       <div
         className="flex-1 p-4 overflow-y-auto text-sm leading-relaxed select-text text-gray-900 dark:text-gray-100 transition-colors"
         onMouseUp={handleTextSelection}
+        onTouchEnd={handleTouchEnd}
+        style={{ userSelect: 'text', WebkitUserSelect: 'text' }}
         dangerouslySetInnerHTML={{ __html: getHighlightedContent() }}
       />
 

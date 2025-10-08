@@ -6,10 +6,10 @@ import { syncApiKeyToExtension, listenToExtensionChanges, initializeSync } from 
 
 // Shared API Keys yang disediakan
 const SHARED_API_KEYS = [
-  { id: 1, key: 'AIzaSyDfRha-Fa2HcEO_iLSKv8EpTklKud6hhi8', label: 'Shared Key 1' },
-  { id: 2, key: 'AIzaSyDfRha-Fa2HcEO_iLSKv8EpTklKud6hhi8', label: 'Shared Key 2' },
-  { id: 3, key: 'AIzaSyBdb8YgwUjjt8Ucd20kHP0IoTKtejytsUU', label: 'Shared Key 3' },
-  { id: 4, key: 'AIzaSyDV6bL_YFF6qdPHTIP37EIhV2jeUnYBaHo', label: 'Shared Key 4' },
+  { id: 1, key: 'AIzaSyArBF81CMgCMZqJgNT7VDRht0ZSspE6hsw', label: 'Shared Key 1' },
+  { id: 2, key: 'AIzaSyAAl4cJixWRfBXok8XAqDwM5iYfrsd7u8k', label: 'Shared Key 2' },
+  { id: 3, key: 'AIzaSyC4GwEs8cCpzv-BXz8SUdy80ZP-MSoJrBE', label: 'Shared Key 3' },
+  { id: 4, key: 'AIzaSyCHfp1JVlsZRKvvCjQcgYC7BTiGDd9-neU', label: 'Shared Key 4' },
 ];
 
 const ApiKeySettings = () => {
@@ -234,8 +234,8 @@ const ApiKeySettings = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 transition-colors">
+    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-8 transition-colors">
         <div className="flex items-center gap-3 mb-6">
           <Key className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">API Key Settings</h2>
@@ -377,16 +377,16 @@ const ApiKeySettings = () => {
                 <ol className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                   <li className="flex gap-3">
                     <span className="flex-shrink-0 w-6 h-6 bg-indigo-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <p className="font-medium mb-1">Visit Google AI Studio</p>
                       <a 
                         href="https://aistudio.google.com/app/apikey" 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline"
+                        className="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline break-all text-sm"
                       >
                         aistudio.google.com/app/apikey
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink className="w-3 h-3 flex-shrink-0" />
                       </a>
                     </div>
                   </li>

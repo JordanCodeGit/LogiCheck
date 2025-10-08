@@ -176,20 +176,20 @@ const DojoPage = () => {
       </div>
 
       {/* Module Selection */}
-      <div className="flex space-x-4">
+      <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => setActiveModule('sparring')}
-          className={`flex-1 card transition-all ${
+          className={`card transition-all p-3 sm:p-4 ${
             activeModule === 'sparring'
               ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg'
               : 'hover:shadow-lg'
           }`}
         >
-          <div className="flex items-center space-x-3">
-            <Sword className="w-6 h-6" />
-            <div className="text-left">
-              <h3 className="font-semibold text-lg">Fallacy Sparring</h3>
-              <p className={`text-sm ${activeModule === 'sparring' ? 'text-purple-100' : 'text-gray-600 dark:text-gray-300'}`}>
+          <div className="flex flex-col sm:flex-row items-center sm:space-x-2 text-center sm:text-left">
+            <Sword className="w-6 h-6 mb-1 sm:mb-0" />
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base">Fallacy Sparring</h3>
+              <p className={`text-xs hidden sm:block ${activeModule === 'sparring' ? 'text-purple-100' : 'text-gray-600 dark:text-gray-300'}`}>
                 Identify fallacies in scenarios
               </p>
             </div>
@@ -198,17 +198,17 @@ const DojoPage = () => {
 
         <button
           onClick={() => setActiveModule('bias')}
-          className={`flex-1 card transition-all ${
+          className={`card transition-all p-3 sm:p-4 ${
             activeModule === 'bias'
               ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg'
               : 'hover:shadow-lg'
           }`}
         >
-          <div className="flex items-center space-x-3">
-            <Target className="w-6 h-6" />
-            <div className="text-left">
-              <h3 className="font-semibold text-lg">Bias Blindspot</h3>
-              <p className={`text-sm ${activeModule === 'bias' ? 'text-purple-100' : 'text-gray-600 dark:text-gray-300'}`}>
+          <div className="flex flex-col sm:flex-row items-center sm:space-x-2 text-center sm:text-left">
+            <Target className="w-6 h-6 mb-1 sm:mb-0" />
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base">Bias Blindspot</h3>
+              <p className={`text-xs hidden sm:block ${activeModule === 'bias' ? 'text-purple-100' : 'text-gray-600 dark:text-gray-300'}`}>
                 Identify biased language
               </p>
             </div>

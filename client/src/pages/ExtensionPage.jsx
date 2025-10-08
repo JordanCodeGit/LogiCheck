@@ -14,20 +14,20 @@ const ExtensionPage = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center space-x-3">
-          <Chrome className="w-12 h-12 text-primary-600 dark:text-primary-400" />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-300 dark:to-secondary-300 bg-clip-text text-transparent">
+      <div className="text-center space-y-4 px-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Chrome className="w-10 h-10 sm:w-12 sm:h-12 text-primary-600 dark:text-primary-400" />
+          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-300 dark:to-secondary-300 bg-clip-text text-transparent">
             LogiCheck Extension
           </h1>
         </div>
-        <p className="text-xl text-gray-600 dark:text-gray-300">
+        <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300">
           Analyze logical arguments directly from your browser
         </p>
 
         {/* Coming Soon Badge */}
-        <div className="inline-flex items-center space-x-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-300 px-4 py-2 rounded-full transition-colors">
-          <AlertCircle className="w-5 h-5" />
+        <div className="inline-flex items-center gap-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-300 px-3 sm:px-4 py-2 rounded-full transition-colors text-sm sm:text-base">
+          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
           <span className="font-medium">Extension on Chrome Web Store & Edge Add-ons - Coming Soon!</span>
         </div>
       </div>

@@ -91,6 +91,21 @@ export const callGeminiAPI = async (prompt, apiKey = null) => {
     return JSON.parse(jsonText.trim());
   } catch (error) {
     console.error('Gemini API Error:', error);
+    
+    // Check if it's a quota exceeded error
+    if (error.message && error.message.includes('429')) {
+      const quotaError = new Error('API quota exceeded. You have reached the free tier limit (250 requests per day). Please wait 24 hours, use your own API key in Settings, atau kamu bisa ganti ke pilihan shared API lain.');
+      quotaError.statusCode = 429;
+      throw quotaError;
+    }
+    
+    // Check for other rate limit errors
+    if (error.message && (error.message.includes('quota') || error.message.includes('Too Many Requests'))) {
+      const quotaError = new Error('API quota exceeded. Please wait a few moments, use your own API key in Settings, atau kamu bisa ganti ke pilihan shared API lain.');
+      quotaError.statusCode = 429;
+      throw quotaError;
+    }
+    
     throw new Error(`Failed to get AI response: ${error.message}`);
   }
 };

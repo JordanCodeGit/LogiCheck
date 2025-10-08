@@ -1,6 +1,16 @@
 import { buildSocraticPrompt, callGeminiAPI } from '../config/gemini.js';
 
 /**
+ * Helper function to strip HTML tags
+ * @param {string} html - HTML string
+ * @returns {string} Plain text
+ */
+const stripHtmlTags = (html) => {
+  if (!html || typeof html !== 'string') return '';
+  return html.replace(/<[^>]*>/g, '').trim();
+};
+
+/**
  * Analyze an essay for argumentative quality
  * POST /api/clinic/analyze-essay
  */
@@ -8,8 +18,11 @@ export const analyzeEssay = async (req, res) => {
   try {
     const { essayText, apiKey } = req.body;
 
+    // Strip HTML tags to get plain text
+    const plainText = stripHtmlTags(essayText);
+
     // Validation
-    if (!essayText || typeof essayText !== 'string' || essayText.trim().length === 0) {
+    if (!plainText || plainText.trim().length === 0) {
       return res.status(400).json({
         error: {
           message: 'Please provide valid essay text to analyze',
@@ -18,7 +31,7 @@ export const analyzeEssay = async (req, res) => {
       });
     }
 
-    if (essayText.length > 20000) {
+    if (plainText.length > 20000) {
       return res.status(400).json({
         error: {
           message: 'Essay is too long. Please limit to 20,000 characters.',
@@ -37,8 +50,8 @@ export const analyzeEssay = async (req, res) => {
       });
     }
 
-    // Build the essay analysis prompt
-    const prompt = buildSocraticPrompt(essayText, 'essay');
+    // Build the essay analysis prompt using plain text
+    const prompt = buildSocraticPrompt(plainText, 'essay');
 
     // Call Gemini API with user's API key
     const aiResponse = await callGeminiAPI(prompt, apiKey);
@@ -59,6 +72,17 @@ export const analyzeEssay = async (req, res) => {
 
   } catch (error) {
     console.error('Error in analyzeEssay:', error);
+    
+    // Handle quota exceeded errors specifically
+    if (error.statusCode === 429 || (error.message && error.message.includes('quota'))) {
+      return res.status(429).json({
+        error: {
+          message: error.message || 'API quota exceeded. Please use your own API key in Settings.',
+          status: 429
+        }
+      });
+    }
+    
     res.status(500).json({
       error: {
         message: 'Failed to analyze essay. Please try again.',
