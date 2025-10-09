@@ -8,13 +8,18 @@ import { Highlighter, Flame, Heart, Filter, Trash2 } from 'lucide-react';
  */
 const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChange, initialHighlights = [] }) => {
   const [highlights, setHighlights] = useState(initialHighlights);
-  const [selectedCategory, setSelectedCategory] = useState('loaded'); // 'loaded', 'emotional', 'framing'
   const [selectedText, setSelectedText] = useState('');
 
   // Sync with initialHighlights when they change
   useEffect(() => {
     setHighlights(initialHighlights);
   }, [initialHighlights]);
+
+  // Safety check
+  if (!content) {
+    console.error('BiasHighlighter: No content provided');
+    return <div className="p-4 text-red-500">Error: No content to display</div>;
+  }
 
   const categories = [
     {
@@ -66,12 +71,13 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
     }, 100);
   };
 
-  const handleAddHighlight = () => {
+  const handleCategoryClick = (categoryId) => {
+    // Only work if there's selected text
     if (selectedText) {
       const newHighlight = {
         id: Date.now(),
         text: selectedText,
-        category: selectedCategory,
+        category: categoryId,
         side: side
       };
       
@@ -86,6 +92,7 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
       setSelectedText('');
       window.getSelection().removeAllRanges();
     }
+    // If no text selected, do nothing (buttons are disabled anyway)
   };
 
   const handleRemoveHighlight = (id) => {
@@ -99,27 +106,76 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
   };
 
   const getHighlightedContent = () => {
-    let highlightedContent = content;
+    if (highlights.length === 0) {
+      return content;
+    }
+
+    // Create an array of text segments with their highlight info
+    let segments = [];
+    let lastIndex = 0;
     
-    // Sort highlights by text length (longest first) to avoid nested replacement issues
-    const sortedHighlights = [...highlights].sort((a, b) => b.text.length - a.text.length);
-    
-    sortedHighlights.forEach((highlight) => {
-      const category = categories.find(c => c.id === highlight.category);
-      const highlightClass = `${category.bgClass} ${category.textClass} px-1 rounded font-medium cursor-pointer hover:opacity-80`;
-      
-      // Use a more specific replacement to avoid partial matches
-      const regex = new RegExp(`(${highlight.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-      highlightedContent = highlightedContent.replace(
-        regex,
-        `<mark class="${highlightClass}" data-highlight-id="${highlight.id}">$1</mark>`
-      );
+    // Sort highlights by position in text to process sequentially
+    const sortedHighlights = [...highlights].sort((a, b) => {
+      const indexA = content.toLowerCase().indexOf(a.text.toLowerCase());
+      const indexB = content.toLowerCase().indexOf(b.text.toLowerCase());
+      return indexA - indexB;
     });
     
-    return highlightedContent;
+    // Track which parts of text are already highlighted to avoid overlaps
+    const usedRanges = [];
+    
+    sortedHighlights.forEach((highlight) => {
+      const searchText = highlight.text;
+      let startIndex = content.toLowerCase().indexOf(searchText.toLowerCase(), lastIndex);
+      
+      // Skip if this position overlaps with an existing highlight
+      const isOverlapping = usedRanges.some(range => 
+        (startIndex >= range.start && startIndex < range.end) ||
+        (startIndex + searchText.length > range.start && startIndex + searchText.length <= range.end)
+      );
+      
+      if (startIndex !== -1 && !isOverlapping) {
+        const category = categories.find(c => c.id === highlight.category);
+        const highlightClass = `${category.bgClass} ${category.textClass} px-1 rounded font-medium`;
+        
+        // Add the highlighted segment
+        segments.push({
+          start: startIndex,
+          end: startIndex + searchText.length,
+          text: content.substring(startIndex, startIndex + searchText.length),
+          highlightClass: highlightClass,
+          id: highlight.id
+        });
+        
+        usedRanges.push({ start: startIndex, end: startIndex + searchText.length });
+      }
+    });
+    
+    // Sort segments by start position
+    segments.sort((a, b) => a.start - b.start);
+    
+    // Build the final HTML
+    let result = '';
+    let currentPos = 0;
+    
+    segments.forEach(segment => {
+      // Add text before this segment
+      if (segment.start > currentPos) {
+        result += content.substring(currentPos, segment.start);
+      }
+      
+      // Add highlighted segment
+      result += `<mark class="${segment.highlightClass}" data-highlight-id="${segment.id}">${segment.text}</mark>`;
+      currentPos = segment.end;
+    });
+    
+    // Add remaining text
+    if (currentPos < content.length) {
+      result += content.substring(currentPos);
+    }
+    
+    return result;
   };
-
-  const currentCategory = categories.find(c => c.id === selectedCategory);
 
   return (
     <div className="flex flex-col h-full">
@@ -145,22 +201,27 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
       <div className="p-3 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700 transition-colors">
         <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 flex items-center">
           <Highlighter className="w-3 h-3 mr-1" />
-          Select text, choose category, then click "Add Highlight"
+          {selectedText 
+            ? 'Click a category button below to highlight the selected text'
+            : 'Select text, then click a category button to highlight'
+          }
         </p>
         
-        {/* Category Selector */}
-        <div className="grid grid-cols-3 gap-2 mb-2">
+        {/* Category Selector - Now also acts as highlight buttons */}
+        <div className="grid grid-cols-3 gap-2">
           {categories.map((category) => {
             const Icon = category.icon;
+            const isActive = !!selectedText;
             return (
               <button
                 key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => isActive && handleCategoryClick(category.id)}
                 className={`p-2 rounded-lg border-2 transition-all text-xs ${
-                  selectedCategory === category.id
-                    ? `${category.borderClass} ${category.bgClass} ${category.textClass}`
-                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300'
+                  isActive
+                    ? `${category.borderClass} ${category.bgClass} ${category.textClass} hover:opacity-80 transform hover:scale-105 shadow-md cursor-pointer`
+                    : 'border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-60'
                 }`}
+                title={isActive ? `Highlight as ${category.name}` : category.description}
               >
                 <div className="flex items-center justify-center space-x-1">
                   <Icon className="w-3 h-3" />
@@ -170,16 +231,6 @@ const BiasHighlighter = ({ content, title, source, bias, side, onHighlightsChang
             );
           })}
         </div>
-
-        {/* Add Highlight Button */}
-        {selectedText && (
-          <button
-            onClick={handleAddHighlight}
-            className={`w-full py-2 px-3 rounded-lg ${currentCategory.bgClass} ${currentCategory.textClass} font-medium text-sm transition-all hover:opacity-80`}
-          >
-            Add as {currentCategory.name}
-          </button>
-        )}
       </div>
 
       {/* Article Content */}

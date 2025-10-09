@@ -66,6 +66,7 @@ export const translations = {
       learnMore: 'Learn More',
       downloadExtension: 'Download Our Extension',
       exploreFeature: 'Explore',
+      featured: 'Featured',
       whyLogiCheck: 'Why LogiCheck?',
       readyToStart: 'Ready to Strengthen Your Reasoning?',
       joinThousands: 'Join thousands of students and academics using LogiCheck to enhance their critical thinking skills.',
@@ -401,6 +402,11 @@ export const translations = {
         indonesian: 'Indonesian (Bahasa Indonesia)',
         note: 'Changing the language will update all text, AI responses, and game content.',
       },
+      feedback: {
+        title: 'Share Your Feedback',
+        description: 'Help us improve LogiCheck! Share your testimonials, suggestions, or report any issues you encounter.',
+        button: 'Give Feedback',
+      },
     },
 
     // API Key Warning Component
@@ -408,6 +414,7 @@ export const translations = {
       title: 'API Key Required',
       description: 'You need to configure your Gemini API key before using this feature. Your API key is stored locally in your browser and never uploaded to our servers.',
       goToSettings: 'Go to Settings',
+      getApiKey: 'Get API Key',
       learnMore: 'Learn More',
     },
 
@@ -506,6 +513,7 @@ export const translations = {
       learnMore: 'Pelajari Lebih Lanjut',
       downloadExtension: 'Unduh Ekstensi Kami',
       exploreFeature: 'Jelajahi',
+      featured: 'Unggulan',
       whyLogiCheck: 'Mengapa LogiCheck?',
       readyToStart: 'Siap Memperkuat Penalaran Anda?',
       joinThousands: 'Bergabunglah dengan ribuan siswa dan akademisi yang menggunakan LogiCheck untuk meningkatkan keterampilan berpikir kritis mereka.',
@@ -841,6 +849,11 @@ export const translations = {
         indonesian: 'Indonesia (Bahasa Indonesia)',
         note: 'Mengubah bahasa akan memperbarui semua teks, respons AI, dan konten game.',
       },
+      feedback: {
+        title: 'Bagikan Testimoni & Kritik Anda',
+        description: 'Bantu kami meningkatkan LogiCheck! Bagikan testimoni, saran, atau laporkan masalah yang Anda temui.',
+        button: 'Berikan Masukan',
+      },
     },
 
     // Komponen Peringatan API Key
@@ -848,6 +861,7 @@ export const translations = {
       title: 'API Key Diperlukan',
       description: 'Anda perlu mengkonfigurasi API key Gemini sebelum menggunakan fitur ini. API key Anda disimpan secara lokal di browser dan tidak pernah diunggah ke server kami.',
       goToSettings: 'Ke Pengaturan',
+      getApiKey: 'Dapatkan API Key',
       learnMore: 'Pelajari Lebih Lanjut',
     },
 

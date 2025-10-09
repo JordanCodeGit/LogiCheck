@@ -13,8 +13,8 @@ const Layout = ({ children }) => {
 
   const navigation = [
     { name: t('nav.home'), path: '/', icon: Home },
-    { name: t('nav.analyzer'), path: '/analyzer', icon: Brain },
     { name: t('nav.dojo'), path: '/dojo', icon: Gamepad2 },
+    { name: t('nav.analyzer'), path: '/analyzer', icon: Brain },
     { name: t('nav.essayClinic'), path: '/essay-clinic', icon: FileText },
     { name: t('nav.extension'), path: '/extension', icon: Puzzle },
     { name: t('nav.settings'), path: '/settings', icon: Settings },

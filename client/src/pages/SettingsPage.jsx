@@ -1,7 +1,7 @@
 import ApiKeySettings from '../components/ApiKeySettings';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Globe } from 'lucide-react';
+import { Globe, MessageSquare, ExternalLink } from 'lucide-react';
 
 const SettingsPage = () => {
   const { t } = useLanguage();
@@ -32,6 +32,31 @@ const SettingsPage = () => {
         </div>
 
         <ApiKeySettings />
+
+        {/* Testimonial & Feedback Section */}
+        <div className="max-w-2xl mx-auto mt-6 px-4">
+          <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-900/20 dark:via-pink-900/20 dark:to-orange-900/20 rounded-lg shadow-md border-2 border-purple-200 dark:border-purple-700 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                {t('settings.feedback.title')}
+              </h2>
+            </div>
+            <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+              {t('settings.feedback.description')}
+            </p>
+            <a
+              href="https://forms.gle/k1E8PUjuyhJVZLDMA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+            >
+              <MessageSquare className="w-5 h-5" />
+              <span>{t('settings.feedback.button')}</span>
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

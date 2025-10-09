@@ -12,6 +12,7 @@ const HomePage = () => {
       icon: Brain,
       path: '/analyzer',
       color: 'from-blue-500 to-cyan-500',
+      isHighlight: false,
     },
     {
       title: t('home.features.dojo.title'),
@@ -19,6 +20,7 @@ const HomePage = () => {
       icon: Gamepad2,
       path: '/dojo',
       color: 'from-purple-500 to-pink-500',
+      isHighlight: true, // Dojo is highlighted
     },
     {
       title: t('home.features.clinic.title'),
@@ -26,6 +28,7 @@ const HomePage = () => {
       icon: FileText,
       path: '/essay-clinic',
       color: 'from-green-500 to-emerald-500',
+      isHighlight: false,
     },
   ];
 
@@ -88,8 +91,18 @@ const HomePage = () => {
             <Link
               key={feature.path}
               to={feature.path}
-              className="group card hover:shadow-xl transition-all transform hover:-translate-y-2"
+              className={`group card hover:shadow-xl transition-all transform hover:-translate-y-2 relative ${
+                feature.isHighlight 
+                  ? 'ring-4 ring-purple-400 dark:ring-purple-500 ring-offset-2 dark:ring-offset-gray-900 shadow-2xl animate-pulse-slow' 
+                  : ''
+              }`}
             >
+              {/* Highlight Badge */}
+              {feature.isHighlight && (
+                <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 animate-bounce-slow">
+                  ⭐ {t('home.featured')}
+                </div>
+              )}
               <div className="flex items-center">
                 <div className={`bg-gradient-to-br ${feature.color} p-4 rounded-xl inline-block group-hover:scale-110 transition-transform`}>
                   <Icon className="w-8 h-8 text-white" />

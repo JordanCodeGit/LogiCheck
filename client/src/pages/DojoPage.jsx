@@ -130,16 +130,20 @@ const DojoPage = () => {
     }
   };
 
-  const handleAnswerSelection = async (answer) => {
+  const handleAnswerSelection = (answer) => {
     if (feedback) return; // Already answered
+    setSelectedAnswer(answer); // Just select, don't submit yet
+  };
 
-    setSelectedAnswer(answer);
+  const handleSubmitAnswer = async () => {
+    if (!selectedAnswer || feedback) return; // No answer selected or already submitted
+
     setLoading(true);
 
     try {
       const result = await verifySparringAnswer({
         challengeId: challenge.challengeId,
-        userAnswer: answer,
+        userAnswer: selectedAnswer,
         scenario: challenge.scenario,
         scenarioIndex: challenge.scenarioIndex // Add scenarioIndex for matching
       });
@@ -300,7 +304,9 @@ const DojoPage = () => {
                         disabled={!!feedback || loading}
                         className={`p-4 rounded-lg border-2 transition-all text-left font-medium ${
                           !feedback
-                            ? 'border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/30 dark:hover:border-purple-400'
+                            ? selectedAnswer === option
+                              ? 'border-purple-500 bg-purple-100 dark:bg-purple-900/30 text-purple-900 dark:text-purple-200 ring-2 ring-purple-300 dark:ring-purple-600'
+                              : 'border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 dark:hover:border-purple-500'
                             : feedback.correctAnswer === option
                             ? 'border-green-500 bg-green-50 text-green-800 dark:bg-green-900/30 dark:text-green-300 dark:border-green-400'
                             : selectedAnswer === option
@@ -310,6 +316,11 @@ const DojoPage = () => {
                       >
                         <div className="flex items-center justify-between">
                           <span>{option}</span>
+                          {!feedback && selectedAnswer === option && (
+                            <div className="w-5 h-5 rounded-full bg-purple-500 dark:bg-purple-400 flex items-center justify-center">
+                              <div className="w-2 h-2 rounded-full bg-white"></div>
+                            </div>
+                          )}
                           {feedback && (
                             <>
                               {feedback.correctAnswer === option && (
@@ -324,6 +335,26 @@ const DojoPage = () => {
                       </button>
                     ))}
                   </div>
+
+                  {/* Submit Button */}
+                  {selectedAnswer && !feedback && (
+                    <div className="mt-4 flex justify-center">
+                      <button
+                        onClick={handleSubmitAnswer}
+                        disabled={loading}
+                        className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:cursor-not-allowed disabled:transform-none disabled:opacity-70"
+                      >
+                        {loading ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span>{t('common.loading')}</span>
+                          </div>
+                        ) : (
+                          t('dojo.sparring.submit')
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Feedback */}
