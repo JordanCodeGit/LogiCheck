@@ -6,6 +6,7 @@ import EssayClinicPage from './pages/EssayClinicPage';
 import SettingsPage from './pages/SettingsPage';
 import ExtensionPage from './pages/ExtensionPage';
 import Layout from './components/Layout';
+import ScrollToTop from './components/ScrollToTop';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { AnalyzerProvider } from './contexts/AnalyzerContext';
@@ -20,6 +21,7 @@ function App() {
           <DojoProvider>
             <EssayClinicProvider>
               <Router>
+                <ScrollToTop />
                 <Layout>
                   <Routes>
                     <Route path="/" element={<HomePage />} />
