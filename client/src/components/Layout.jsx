@@ -2,19 +2,22 @@ import { Link, useLocation } from 'react-router-dom';
 import { Brain, Home, Gamepad2, FileText, Menu, X, Settings, Puzzle, Sun, Moon } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Layout = ({ children }) => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
 
   const navigation = [
-    { name: 'Home', path: '/', icon: Home },
-    { name: 'Analyzer', path: '/analyzer', icon: Brain },
-    { name: 'Dojo', path: '/dojo', icon: Gamepad2 },
-    { name: 'Essay Clinic', path: '/essay-clinic', icon: FileText },
-    { name: 'Extension', path: '/extension', icon: Puzzle },
-    { name: 'Settings', path: '/settings', icon: Settings },
+    { name: t('nav.home'), path: '/', icon: Home },
+    { name: t('nav.analyzer'), path: '/analyzer', icon: Brain },
+    { name: t('nav.dojo'), path: '/dojo', icon: Gamepad2 },
+    { name: t('nav.essayClinic'), path: '/essay-clinic', icon: FileText },
+    { name: t('nav.extension'), path: '/extension', icon: Puzzle },
+    { name: t('nav.settings'), path: '/settings', icon: Settings },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -60,12 +63,15 @@ const Layout = ({ children }) => {
 
             {/* Theme Toggle & Mobile menu button */}
             <div className="flex items-center space-x-2">
+              {/* Language Switcher */}
+              <LanguageSwitcher variant="toggle" />
+              
               {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-                aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                aria-label={theme === 'light' ? t('settings.theme.dark') : t('settings.theme.light')}
+                title={theme === 'light' ? t('settings.theme.dark') : t('settings.theme.light')}
               >
                 {theme === 'light' ? (
                   <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -125,10 +131,10 @@ const Layout = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-gray-600 dark:text-gray-300">
             <p className="text-sm">
-              © 2025 LogiCheck. Your Conversational AI Coach for Sharpening Logical Reasoning.
+              © 2025 LogiCheck. {t('home.subtitle')}
             </p>
             <p className="text-xs mt-2 text-gray-500 dark:text-gray-400">
-              Built for students, academics, and lifelong learners.
+              {t('home.description')}
             </p>
           </div>
         </div>

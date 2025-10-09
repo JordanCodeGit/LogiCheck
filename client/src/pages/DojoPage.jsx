@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Sword, Trophy, Target, CheckCircle, XCircle, RefreshCw, Send } from 'lucide-react';
 import { getSparringChallenge, verifySparringAnswer, getBiasChallenge, analyzeBiasHighlights } from '../api/api';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -6,8 +6,15 @@ import Alert from '../components/Alert';
 import BiasHighlighter from '../components/BiasHighlighter';
 import BiasFeedback from '../components/BiasFeedback';
 import { useDojo } from '../contexts/DojoContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const DojoPage = () => {
+  const { t } = useLanguage();
+  
+  // Separate loading states for each module
+  const [sparringLoading, setSparringLoading] = useState(false);
+  const [biasLoading, setBiasLoading] = useState(false);
+  
   const {
     activeModule,
     setActiveModule,
@@ -49,7 +56,7 @@ const DojoPage = () => {
   }, [activeModule, challenge, biasChallenge]);
 
   const loadNewChallenge = async () => {
-    setLoading(true);
+    setSparringLoading(true);
     setError(null);
     setSelectedAnswer(null);
     setFeedback(null);
@@ -60,12 +67,13 @@ const DojoPage = () => {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setSparringLoading(false);
     }
   };
 
   const loadBiasChallenge = async () => {
-    setLoading(true);
+    // Don't clear challenge immediately - keep showing current one while loading
+    setBiasLoading(true);
     setError(null);
     setArticleAHighlights([]);
     setArticleBHighlights([]);
@@ -73,17 +81,33 @@ const DojoPage = () => {
 
     try {
       const data = await getBiasChallenge();
+      console.log('📥 Received bias challenge data:', {
+        topic: data.topic,
+        articleA_title: data.articleA.title,
+        articleB_title: data.articleB.title
+      });
+      // Only update challenge after translation is complete
       setBiasChallenge(data);
     } catch (err) {
-      setError(err.message);
+      console.error('Error loading bias challenge:', err);
+      // Show more specific error message
+      const errorMessage = err.response?.data?.error?.message || err.message || t('errors.loadFailed');
+      setError(errorMessage);
+      // Log detailed error information for debugging
+      console.error('Detailed error:', {
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        message: err.message
+      });
     } finally {
-      setLoading(false);
+      setBiasLoading(false);
     }
   };
 
   const handleSubmitBiasAnalysis = async () => {
     if (articleAHighlights.length === 0 && articleBHighlights.length === 0) {
-      setError('Please highlight some text in both articles before submitting.');
+      setError(t('dojo.bias.errorNoHighlights'));
       return;
     }
 
@@ -116,7 +140,8 @@ const DojoPage = () => {
       const result = await verifySparringAnswer({
         challengeId: challenge.challengeId,
         userAnswer: answer,
-        scenario: challenge.scenario
+        scenario: challenge.scenario,
+        scenarioIndex: challenge.scenarioIndex // Add scenarioIndex for matching
       });
 
       setFeedback(result);
@@ -142,10 +167,10 @@ const DojoPage = () => {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-          The Dojo
+          {t('dojo.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Sharpen your logical reasoning skills through gamified practice
+          {t('dojo.subtitle')}
         </p>
       </div>
 
@@ -155,9 +180,9 @@ const DojoPage = () => {
           <div className="flex items-center space-x-3">
             <Trophy className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Your Progress</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{t('dojo.stats.progress')}</p>
               <p className="font-semibold text-gray-900 dark:text-gray-100">
-                {stats.correct} / {stats.total} Correct
+                {stats.correct} / {stats.total} {t('dojo.stats.correct')}
                 {stats.total > 0 && (
                   <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                     ({Math.round((stats.correct / stats.total) * 100)}%)
@@ -167,9 +192,9 @@ const DojoPage = () => {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-600 dark:text-gray-300">Mastery Level</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">{t('dojo.stats.mastery')}</p>
             <p className="font-semibold text-purple-600 dark:text-purple-400">
-              {stats.total < 5 ? 'Novice' : stats.total < 15 ? 'Apprentice' : 'Expert'}
+              {stats.total < 5 ? t('dojo.stats.novice') : stats.total < 15 ? t('dojo.stats.apprentice') : t('dojo.stats.expert')}
             </p>
           </div>
         </div>
@@ -188,9 +213,9 @@ const DojoPage = () => {
           <div className="flex flex-col sm:flex-row items-center sm:space-x-2 text-center sm:text-left">
             <Sword className="w-6 h-6 mb-1 sm:mb-0" />
             <div>
-              <h3 className="font-semibold text-sm sm:text-base">Fallacy Sparring</h3>
+              <h3 className="font-semibold text-sm sm:text-base">{t('dojo.sparring.title')}</h3>
               <p className={`text-xs hidden sm:block ${activeModule === 'sparring' ? 'text-purple-100' : 'text-gray-600 dark:text-gray-300'}`}>
-                Identify fallacies in scenarios
+                {t('dojo.sparring.description')}
               </p>
             </div>
           </div>
@@ -207,9 +232,9 @@ const DojoPage = () => {
           <div className="flex flex-col sm:flex-row items-center sm:space-x-2 text-center sm:text-left">
             <Target className="w-6 h-6 mb-1 sm:mb-0" />
             <div>
-              <h3 className="font-semibold text-sm sm:text-base">Bias Blindspot</h3>
+              <h3 className="font-semibold text-sm sm:text-base">{t('dojo.bias.title')}</h3>
               <p className={`text-xs hidden sm:block ${activeModule === 'bias' ? 'text-purple-100' : 'text-gray-600 dark:text-gray-300'}`}>
-                Identify biased language
+                {t('dojo.bias.description')}
               </p>
             </div>
           </div>
@@ -228,22 +253,32 @@ const DojoPage = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold flex items-center space-x-2 text-gray-900 dark:text-gray-100">
                 <Sword className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                <span>Fallacy Sparring</span>
+                <span>{t('dojo.sparring.title')}</span>
               </h2>
-              {challenge && !loading && (
+              {challenge && !sparringLoading && (
                 <button
                   onClick={handleNextChallenge}
                   className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
                   <RefreshCw className="w-4 h-4" />
-                  <span>New Challenge</span>
+                  <span>{t('dojo.sparring.newChallenge')}</span>
                 </button>
               )}
             </div>
 
-            {loading && !challenge && <LoadingSpinner text="Loading challenge..." />}
+            {sparringLoading && (
+              <div className="flex flex-col items-center justify-center py-16 space-y-4">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-purple-200 dark:border-purple-800 rounded-full"></div>
+                  <div className="w-16 h-16 border-4 border-purple-600 dark:border-purple-400 rounded-full animate-spin border-t-transparent absolute top-0 left-0"></div>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">{t('dojo.sparring.loadingChallenge')}</p>
+                </div>
+              </div>
+            )}
 
-            {challenge && !loading && (
+            {challenge && !sparringLoading && (
               <div className="space-y-6">
                 {/* Scenario */}
                 <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border-l-4 border-l-purple-500 transition-colors">
@@ -255,7 +290,7 @@ const DojoPage = () => {
                 {/* Options */}
                 <div>
                   <p className="font-semibold mb-3 text-gray-700 dark:text-gray-300">
-                    Which logical fallacy is present in this scenario?
+                    {t('dojo.sparring.question')}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {challenge.options.map((option, index) => (
@@ -308,10 +343,10 @@ const DojoPage = () => {
                         <h3 className={`font-bold text-lg mb-2 ${
                           feedback.isCorrect ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'
                         }`}>
-                          {feedback.isCorrect ? 'Correct!' : 'Not quite right'}
+                          {feedback.isCorrect ? t('dojo.sparring.correct') : t('dojo.sparring.incorrect')}
                         </h3>
                         <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-2">
-                          <strong>Correct Answer:</strong> {feedback.correctAnswer}
+                          <strong>{t('dojo.sparring.correctAnswer')}:</strong> {feedback.correctAnswer}
                         </p>
                         <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                           {feedback.explanation}
@@ -323,7 +358,7 @@ const DojoPage = () => {
                       className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 mt-4"
                     >
                       <RefreshCw className="w-5 h-5" />
-                      <span>Next Challenge</span>
+                      <span>{t('dojo.sparring.nextChallenge')}</span>
                     </button>
                   </div>
                 )}
@@ -338,27 +373,38 @@ const DojoPage = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center space-x-2">
                 <Target className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Bias Blindspot Challenge</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{t('dojo.bias.challengeTitle')}</h2>
               </div>
-              {biasChallenge && !loading && (
+              {!biasLoading && (
                 <button
                   onClick={loadBiasChallenge}
-                  className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 whitespace-nowrap flex-shrink-0"
+                  disabled={biasLoading}
+                  className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 whitespace-nowrap flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   <RefreshCw className="w-4 h-4" />
-                  <span>New Topic</span>
+                  <span>{t('dojo.bias.newTopic')}</span>
                 </button>
               )}
             </div>
 
-            {loading && !biasChallenge && <LoadingSpinner text="Loading challenge..." />}
+            {biasLoading && (
+              <div className="flex flex-col items-center justify-center py-16 space-y-4">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-purple-200 dark:border-purple-800 rounded-full"></div>
+                  <div className="w-16 h-16 border-4 border-purple-600 dark:border-purple-400 rounded-full animate-spin border-t-transparent absolute top-0 left-0"></div>
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">{t('dojo.bias.loadingChallenge')}</p>
+                </div>
+              </div>
+            )}
 
-            {biasChallenge && !loading && (
+            {biasChallenge && !biasLoading && (
               <div className="space-y-4">
                 {/* Topic and Instructions */}
                 <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-xl border-l-4 border-l-purple-500 transition-colors">
                   <h3 className="font-bold text-lg mb-2 text-purple-900 dark:text-purple-300">
-                    Topic: {biasChallenge.topic}
+                    {t('dojo.bias.topic')}: {biasChallenge.topic}
                   </h3>
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     {biasChallenge.instructions}
@@ -367,19 +413,19 @@ const DojoPage = () => {
 
                 {/* Legend */}
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg transition-colors">
-                  <p className="font-semibold text-sm mb-2 text-gray-700 dark:text-gray-300">Bias Categories:</p>
+                  <p className="font-semibold text-sm mb-2 text-gray-700 dark:text-gray-300">{t('dojo.bias.categories')}:</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 bg-red-100 border-2 border-red-500 rounded"></div>
-                      <span><strong>Loaded Language:</strong> Words with strong connotations</span>
+                      <span><strong>{t('dojo.bias.loadedLanguage')}:</strong> {t('dojo.bias.loadedLanguageDesc')}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 bg-orange-100 border-2 border-orange-500 rounded"></div>
-                      <span><strong>Emotional Appeals:</strong> Appeals to emotion over logic</span>
+                      <span><strong>{t('dojo.bias.emotionalAppeals')}:</strong> {t('dojo.bias.emotionalAppealsDesc')}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 bg-purple-100 border-2 border-purple-500 rounded"></div>
-                      <span><strong>Biased Framing:</strong> Selective presentation</span>
+                      <span><strong>{t('dojo.bias.biasedFraming')}:</strong> {t('dojo.bias.biasedFramingDesc')}</span>
                     </div>
                   </div>
                 </div>
@@ -434,7 +480,7 @@ const DojoPage = () => {
                     ) : (
                       <>
                         <Send className="w-5 h-5" />
-                        <span>Get Feedback on My Analysis</span>
+                        <span>{t('dojo.bias.getFeedback')}</span>
                       </>
                     )}
                   </button>
@@ -442,12 +488,12 @@ const DojoPage = () => {
 
                 {/* Reflection Prompt */}
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 rounded-xl border-l-4 border-l-blue-500 transition-colors">
-                  <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-300">Reflection Questions:</h4>
+                  <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-300">{t('dojo.bias.reflectionTitle')}:</h4>
                   <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
-                    <li>What patterns of bias did you notice in each article?</li>
-                    <li>How does each source frame the issue differently?</li>
-                    <li>Which specific words or phrases reveal the author's perspective?</li>
-                    <li>How might a neutral presentation of this topic differ from both articles?</li>
+                    <li>{t('dojo.bias.reflectionQ1')}</li>
+                    <li>{t('dojo.bias.reflectionQ2')}</li>
+                    <li>{t('dojo.bias.reflectionQ3')}</li>
+                    <li>{t('dojo.bias.reflectionQ4')}</li>
                   </ul>
                 </div>
               </div>

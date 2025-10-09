@@ -9,8 +9,8 @@ router.get('/sparring-challenge', getSparringChallenge);
 // POST /api/dojo/verify-answer - Verify user's answer
 router.post('/verify-answer', verifySparringAnswer);
 
-// GET /api/dojo/bias-challenge - Get a new bias blindspot challenge
-router.get('/bias-challenge', getBiasChallenge);
+// POST /api/dojo/bias-challenge - Get a new bias blindspot challenge (POST to support apiKey in body)
+router.post('/bias-challenge', getBiasChallenge);
 
 // POST /api/dojo/analyze-bias-highlights - Analyze user's bias highlights
 router.post('/analyze-bias-highlights', analyzeBiasHighlights);

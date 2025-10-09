@@ -24,12 +24,22 @@ export const getGeminiModel = (apiKey = null) => {
 /**
  * The Socratic Prompt Architecture - Multi-layered prompt system
  * This is the "brain" of LogiCheck
+ * @param {string} userText - The text to analyze
+ * @param {string} promptType - Type of analysis ('analyze', 'essay', 'sparring', 'bias')
+ * @param {string} language - Language code ('en' or 'id')
  */
-export const buildSocraticPrompt = (userText, promptType = 'analyze') => {
-  const basePersona = `You are LogiCheck, a conversational AI coach. Your purpose is to help users sharpen their logical reasoning. You are analytical, neutral, and encouraging. You do not give opinions or declare information 'true' or 'false.' Your entire focus is on the structure and quality of the argument.`;
+export const buildSocraticPrompt = (userText, promptType = 'analyze', language = 'en') => {
+  // Base persona in both languages
+  const basePersonas = {
+    en: `You are LogiCheck, a conversational AI coach. Your purpose is to help users sharpen their logical reasoning. You are analytical, neutral, and encouraging. You do not give opinions or declare information 'true' or 'false.' Your entire focus is on the structure and quality of the argument.`,
+    id: `Anda adalah LogiCheck, pelatih AI percakapan. Tujuan Anda adalah membantu pengguna mengasah penalaran logis mereka. Anda analitis, netral, dan mendorong. Anda tidak memberikan opini atau menyatakan informasi 'benar' atau 'salah.' Fokus utama Anda adalah pada struktur dan kualitas argumen.`
+  };
+
+  const basePersona = basePersonas[language] || basePersonas.en;
 
   const prompts = {
-    analyze: `${basePersona}
+    en: {
+      analyze: `${basePersona}
 
 Analyze the following text. Your output must be a JSON object with these exact keys:
 - 'mainClaim' (a one-sentence summary of the author's central argument)
@@ -45,7 +55,7 @@ ${userText}
 
 Respond ONLY with valid JSON. No additional text before or after the JSON object.`,
 
-    essay: `${basePersona}
+      essay: `${basePersona}
 
 Analyze the following essay focusing EXCLUSIVELY on argumentation, not grammar or style. Your output must be a JSON object with the key 'annotations', which is a list of objects. Each object must have:
 - 'targetText' (the specific excerpt from the essay)
@@ -62,9 +72,46 @@ Essay to analyze:
 ${userText}
 
 Respond ONLY with valid JSON. No additional text before or after the JSON object.`
+    },
+    id: {
+      analyze: `${basePersona}
+
+Analisis teks berikut. Output Anda harus berupa objek JSON dengan key yang tepat ini:
+- 'mainClaim' (ringkasan satu kalimat dari argumen utama penulis)
+- 'assumptions' (daftar asumsi kunci yang tidak terucapkan)
+- 'fallacies' (daftar objek, di mana setiap objek memiliki 'fallacyName', 'quote', dan 'explanation')
+
+Jika suatu key tidak memiliki temuan, kembalikan daftar kosong.
+
+Berdasarkan analisis Anda, hasilkan satu pertanyaan Sokratik yang mendorong pengguna untuk mengevaluasi titik terlemah argumen. Pertanyaan tidak boleh mengandung jawaban. Bentuk pertanyaan untuk menumbuhkan rasa ingin tahu dan refleksi lebih lanjut. Sertakan ini sebagai 'socraticQuestion' dalam respons JSON Anda.
+
+Teks untuk dianalisis:
+${userText}
+
+Respons HANYA dengan JSON yang valid. Tidak ada teks tambahan sebelum atau sesudah objek JSON.`,
+
+      essay: `${basePersona}
+
+Analisis esai berikut dengan fokus EKSKLUSIF pada argumentasi, bukan tata bahasa atau gaya. Output Anda harus berupa objek JSON dengan key 'annotations', yang merupakan daftar objek. Setiap objek harus memiliki:
+- 'targetText' (kutipan spesifik dari esai)
+- 'feedbackCategory' (salah satu dari: "Kohesi Tesis", "Keterkaitan Bukti-ke-Klaim", "Alur Logis", "Keterlibatan Argumen Tandingan")
+- 'comment' (saran konstruktif dan formatif)
+
+Fokus pada area ini:
+1. Kohesi Tesis: Apakah esai secara konsisten mendukung tesis utama?
+2. Keterkaitan Bukti-ke-Klaim: Apakah bukti cukup dan langsung relevan?
+3. Alur Logis: Apakah ada kesenjangan atau kontradiksi logis?
+4. Keterlibatan Argumen Tandingan: Apakah esai mengakui dan membantah argumen tandingan?
+
+Esai untuk dianalisis:
+${userText}
+
+Respons HANYA dengan JSON yang valid. Tidak ada teks tambahan sebelum atau sesudah objek JSON.`
+    }
   };
 
-  return prompts[promptType] || prompts.analyze;
+  const languagePrompts = prompts[language] || prompts.en;
+  return languagePrompts[promptType] || languagePrompts.analyze;
 };
 
 /**

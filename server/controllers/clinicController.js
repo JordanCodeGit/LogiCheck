@@ -16,7 +16,7 @@ const stripHtmlTags = (html) => {
  */
 export const analyzeEssay = async (req, res) => {
   try {
-    const { essayText, apiKey } = req.body;
+    const { essayText, apiKey, language = 'en' } = req.body;
 
     // Strip HTML tags to get plain text
     const plainText = stripHtmlTags(essayText);
@@ -50,8 +50,8 @@ export const analyzeEssay = async (req, res) => {
       });
     }
 
-    // Build the essay analysis prompt using plain text
-    const prompt = buildSocraticPrompt(plainText, 'essay');
+    // Build the essay analysis prompt using plain text with language support
+    const prompt = buildSocraticPrompt(plainText, 'essay', language);
 
     // Call Gemini API with user's API key
     const aiResponse = await callGeminiAPI(prompt, apiKey);

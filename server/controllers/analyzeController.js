@@ -6,7 +6,7 @@ import { buildSocraticPrompt, callGeminiAPI } from '../config/gemini.js';
  */
 export const analyzeText = async (req, res) => {
   try {
-    const { text, apiKey } = req.body;
+    const { text, apiKey, language = 'en' } = req.body;
 
     // Validation
     if (!text || typeof text !== 'string' || text.trim().length === 0) {
@@ -37,8 +37,8 @@ export const analyzeText = async (req, res) => {
       });
     }
 
-    // Build the Socratic prompt (Layer 1, 2, and 3 combined)
-    const prompt = buildSocraticPrompt(text, 'analyze');
+    // Build the Socratic prompt (Layer 1, 2, and 3 combined) with language support
+    const prompt = buildSocraticPrompt(text, 'analyze', language);
 
     // Call Gemini API with user's API key
     const aiResponse = await callGeminiAPI(prompt, apiKey);

@@ -9,7 +9,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 120000, // 120 seconds (2 minutes) for translation
+  timeout: 30000, // 30 seconds
 });
 
 /**
@@ -88,6 +88,13 @@ export const getBiasChallenge = async () => {
   try {
     const apiKey = getApiKey();
     const language = getLanguage();
+    
+    console.log('=== getBiasChallenge Frontend ===');
+    console.log('Language from localStorage:', language);
+    console.log('API Key from localStorage:', apiKey ? 'YES ✅' : 'NO ❌');
+    console.log('API Key length:', apiKey ? apiKey.length : 0);
+    console.log('API Key preview:', apiKey ? apiKey.substring(0, 20) + '...' : 'null');
+    console.log('================================');
     
     const response = await api.post('/dojo/bias-challenge', { language, apiKey });
     return response.data;

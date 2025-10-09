@@ -6,8 +6,10 @@ import Alert from '../components/Alert';
 import FallacyCard from '../components/FallacyCard';
 import ApiKeyWarning from '../components/ApiKeyWarning';
 import { useAnalyzer } from '../contexts/AnalyzerContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const AnalyzerPage = () => {
+  const { t } = useLanguage();
   const {
     inputText,
     setInputText,
@@ -23,12 +25,12 @@ const AnalyzerPage = () => {
 
   const handleAnalyze = async () => {
     if (!inputText.trim()) {
-      setError('Please enter some text to analyze');
+      setError(t('analyzer.errors.emptyText'));
       return;
     }
 
     if (!hasApiKey()) {
-      setError('Please configure your API key in Settings first');
+      setError(t('analyzer.errors.noApiKey'));
       return;
     }
 
@@ -45,7 +47,7 @@ const AnalyzerPage = () => {
       setAnalysis(result);
     } catch (err) {
       if (err.name === 'AbortError' || err.message === 'Analysis cancelled') {
-        setError('Analysis was cancelled');
+        setError(t('analyzer.errors.cancelled'));
       } else {
         setError(err.message);
       }
@@ -68,10 +70,10 @@ const AnalyzerPage = () => {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-300 dark:to-secondary-300 bg-clip-text text-transparent">
-          Core Analyzer
+          {t('analyzer.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Paste any text below to analyze its logical structure, identify fallacies, and uncover hidden assumptions.
+          {t('analyzer.subtitle')}
         </p>
       </div>
 
@@ -81,13 +83,12 @@ const AnalyzerPage = () => {
         <div className="card">
           <h2 className="text-xl font-semibold mb-4 flex items-center space-x-2">
             <Sparkles className="w-5 h-5 text-primary-600" />
-            <span>Text to Analyze</span>
+            <span>{t('analyzer.title')}</span>
           </h2>
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Paste your text here...
-(articles, arguments, social media posts, etc.)"
+            placeholder={t('analyzer.inputPlaceholder')}
             className="textarea min-h-[500px] font-sans text-base"
             rows="20"
           />
@@ -98,7 +99,7 @@ const AnalyzerPage = () => {
                 disabled={!inputText.trim()}
                 className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-lg px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Start Analyzing
+                {t('analyzer.analyzeButton')}
               </button>
             ) : (
               <div className="space-y-2">
@@ -111,7 +112,7 @@ const AnalyzerPage = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>Analyzing...</span>
+                    <span>{t('analyzer.analyzingButton')}</span>
                   </span>
                   <div className="absolute bottom-0 left-0 h-1 bg-white/30 animate-pulse" style={{width: '100%'}}></div>
                 </button>
@@ -123,7 +124,7 @@ const AnalyzerPage = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clipRule="evenodd" />
                     </svg>
-                    <span>Stop Analysis</span>
+                    <span>{t('analyzer.stopButton')}</span>
                   </span>
                 </button>
               </div>
@@ -143,7 +144,7 @@ const AnalyzerPage = () => {
 
           {loading && (
             <div className="card">
-              <LoadingSpinner text="Analyzing your text..." />
+              <LoadingSpinner text={t('loading.analyzing')} />
             </div>
           )}
 
@@ -151,14 +152,14 @@ const AnalyzerPage = () => {
             <div className="space-y-4">
               {/* Main Claim */}
               <div className="card border-l-4 border-l-primary-500">
-                <h3 className="font-semibold text-lg text-primary-700 dark:text-primary-400 mb-2">Main Claim</h3>
+                <h3 className="font-semibold text-lg text-primary-700 dark:text-primary-400 mb-2">{t('analyzer.results.mainClaim')}</h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{analysis.mainClaim}</p>
               </div>
 
               {/* Assumptions */}
               {analysis.assumptions && analysis.assumptions.length > 0 && (
                 <div className="card border-l-4 border-l-yellow-500">
-                  <h3 className="font-semibold text-lg text-yellow-700 dark:text-yellow-400 mb-3">Underlying Assumptions</h3>
+                  <h3 className="font-semibold text-lg text-yellow-700 dark:text-yellow-400 mb-3">{t('analyzer.results.assumptions')}</h3>
                   <ul className="space-y-2">
                     {analysis.assumptions.map((assumption, index) => (
                       <li key={index} className="flex items-start space-x-2">
@@ -173,7 +174,7 @@ const AnalyzerPage = () => {
               {/* Fallacies */}
               {analysis.fallacies && analysis.fallacies.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-lg text-red-700 dark:text-red-400">Identified Logical Fallacies</h3>
+                  <h3 className="font-semibold text-lg text-red-700 dark:text-red-400">{t('analyzer.results.fallacies')}</h3>
                   {analysis.fallacies.map((fallacy, index) => (
                     <FallacyCard key={index} fallacy={fallacy} />
                   ))}
@@ -184,7 +185,7 @@ const AnalyzerPage = () => {
               {analysis.fallacies && analysis.fallacies.length === 0 && (
                 <Alert 
                   type="success" 
-                  message="No obvious logical fallacies detected in this text. However, always evaluate arguments critically!" 
+                  message={t('analyzer.results.noFallacies')} 
                 />
               )}
 
@@ -193,7 +194,7 @@ const AnalyzerPage = () => {
                 <div className="card bg-gradient-to-br from-secondary-50 to-primary-50 dark:from-secondary-900/20 dark:to-primary-900/20 border-l-4 border-l-secondary-500">
                   <h3 className="font-semibold text-lg mb-3 flex items-center space-x-2 text-secondary-700 dark:text-secondary-400">
                     <Sparkles className="w-5 h-5 text-secondary-600 dark:text-secondary-400" />
-                    <span>Socratic Questions</span>
+                    <span>{t('analyzer.results.socraticQuestion')}</span>
                   </h3>
                   <p className="text-gray-700 dark:text-gray-300 leading-relaxed italic">
                     {analysis.socraticQuestion}
@@ -209,7 +210,7 @@ const AnalyzerPage = () => {
                 <Brain className="w-16 h-16 mx-auto" />
               </div>
               <p className="text-gray-500 dark:text-gray-400">
-                Enter text in the left panel and click "Analyze Text" to begin
+                {t('analyzer.subtitle')}
               </p>
             </div>
           )}

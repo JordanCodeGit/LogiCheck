@@ -7,6 +7,36 @@ import { getApiKey } from './config.js';
 // Initialize API key and endpoints lazily
 let GOOGLE_AI_API_KEY = null;
 let MODEL_ENDPOINTS = null;
+let CURRENT_LANGUAGE = 'en';
+
+// Get language from storage
+async function getLanguage() {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(['LOGICHECK_LANGUAGE'], (result) => {
+      resolve(result.LOGICHECK_LANGUAGE || 'en');
+    });
+  });
+}
+
+// Update context menu when language changes
+async function updateContextMenu() {
+  const language = await getLanguage();
+  CURRENT_LANGUAGE = language;
+  
+  const contextMenuText = language === 'id' 
+    ? 'Analisis dengan LogiCheck' 
+    : 'Analyze with LogiCheck';
+  
+  // Remove existing context menu
+  chrome.contextMenus.removeAll(() => {
+    // Create new context menu with updated text
+    chrome.contextMenus.create({
+      id: 'analyzeWithLogiCheck',
+      title: contextMenuText,
+      contexts: ['selection']
+    });
+  });
+}
 
 async function ensureApiKeyLoaded() {
   if (!GOOGLE_AI_API_KEY) {
@@ -20,6 +50,9 @@ async function ensureApiKeyLoaded() {
       console.warn('Gemini API Key not found in chrome.storage.local');
     }
   }
+  
+  // Also load current language
+  CURRENT_LANGUAGE = await getLanguage();
 }
 
 // Function to analyze text using Google AI (Gemini) with fallback
@@ -67,9 +100,12 @@ async function analyzeTextWithGoogleAI(selectedText) {
 
 // Helper function to try analysis with a specific endpoint
 async function tryAnalyzeWithEndpoint(apiUrl, selectedText) {
-  // Construct a direct, streamlined prompt
-  const prompt = `
-Analyze the following text for its logical structure. Your response MUST be a single, minified JSON object with the following keys: "mainClaim", "assumptions", "fallacies", "socraticQuestion".
+  // Get current language
+  const language = CURRENT_LANGUAGE || 'en';
+  
+  // Construct prompts in both languages
+  const prompts = {
+    en: `Analyze the following text for its logical structure. Your response MUST be a single, minified JSON object with the following keys: "mainClaim", "assumptions", "fallacies", "socraticQuestion".
 
 - "mainClaim": A one-sentence summary of the author's central argument.
 - "assumptions": A list of key unstated beliefs.
@@ -78,8 +114,20 @@ Analyze the following text for its logical structure. Your response MUST be a si
 
 If a key has no findings, return an empty string or an empty list. Do not add any text outside of the JSON object.
 
-Text to analyze: "${selectedText}"
-`;
+Text to analyze: "${selectedText}"`,
+    id: `Analisis teks berikut untuk struktur logisnya. Respons Anda HARUS berupa objek JSON tunggal yang diminimalkan dengan key berikut: "mainClaim", "assumptions", "fallacies", "socraticQuestion".
+
+- "mainClaim": Ringkasan satu kalimat dari argumen utama penulis.
+- "assumptions": Daftar keyakinan yang tidak terucapkan.
+- "fallacies": Daftar objek, di mana setiap objek memiliki "fallacyName", "quote", dan "explanation".
+- "socraticQuestion": Satu pertanyaan Sokratik terbuka berdasarkan titik terlemah teks.
+
+Jika suatu key tidak memiliki temuan, kembalikan string kosong atau daftar kosong. Jangan tambahkan teks di luar objek JSON.
+
+Teks untuk dianalisis: "${selectedText}"`
+  };
+  
+  const prompt = prompts[language] || prompts.en;
 
   // Prepare the request body
   const requestBody = {
@@ -328,6 +376,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Listen for storage changes and notify content scripts to sync with web page
 chrome.storage.onChanged.addListener((changes, areaName) => {
+  // Handle API key changes
   if (areaName === 'local' && changes.GEMINI_API_KEY) {
     const newApiKey = changes.GEMINI_API_KEY.newValue || null;
     console.log('API key changed in extension storage, notifying content scripts...');
@@ -345,5 +394,33 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       });
     });
   }
+  
+  // Handle language changes
+  if (areaName === 'sync' && changes.LOGICHECK_LANGUAGE) {
+    const newLanguage = changes.LOGICHECK_LANGUAGE.newValue || 'en';
+    console.log('Language changed to:', newLanguage);
+    CURRENT_LANGUAGE = newLanguage;
+    
+    // Update context menu
+    updateContextMenu();
+    
+    // Notify all tabs about the language change
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach((tab) => {
+        chrome.tabs.sendMessage(tab.id, {
+          action: 'languageChanged',
+          language: newLanguage
+        }).catch((err) => {
+          console.debug('Could not notify tab', tab.id, err.message);
+        });
+      });
+    });
+  }
+});
+
+// Initialize on installation
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('LogiCheck Lens installed/updated');
+  updateContextMenu();
 });
 

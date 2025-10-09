@@ -32,6 +32,11 @@ export const getApiBaseUrl = () => {
 export const API_KEY_STORAGE_KEY = 'GEMINI_API_KEY';
 
 /**
+ * Local storage key for language
+ */
+export const LANGUAGE_KEY = 'LOGICHECK_LANGUAGE';
+
+/**
  * Get API key from localStorage or chrome.storage
  * @returns {Promise<string|null>} The stored API key or null
  */
@@ -51,6 +56,28 @@ export const getApiKey = async () => {
   }
   
   return null;
+};
+
+/**
+ * Get language from localStorage or chrome.storage
+ * @returns {Promise<string>} The stored language or 'en' as default
+ */
+export const getLanguage = async () => {
+  // For web (browser localStorage)
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return window.localStorage.getItem(LANGUAGE_KEY) || 'en';
+  }
+  
+  // For Chrome extension
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    return new Promise((resolve) => {
+      chrome.storage.sync.get([LANGUAGE_KEY], (result) => {
+        resolve(result[LANGUAGE_KEY] || 'en');
+      });
+    });
+  }
+  
+  return 'en';
 };
 
 /**
@@ -150,10 +177,11 @@ export const apiRequest = async (endpoint, options = {}) => {
  */
 export const analyzeText = async (text) => {
   const apiKey = await getApiKey();
+  const language = await getLanguage();
   
   return apiRequest('/analyze', {
     method: 'POST',
-    body: JSON.stringify({ text, apiKey }),
+    body: JSON.stringify({ text, apiKey, language }),
   });
 };
 
@@ -208,10 +236,11 @@ export const analyzeBiasHighlights = async (data) => {
  */
 export const analyzeEssay = async (essayText) => {
   const apiKey = await getApiKey();
+  const language = await getLanguage();
   
   return apiRequest('/clinic/analyze-essay', {
     method: 'POST',
-    body: JSON.stringify({ essayText, apiKey }),
+    body: JSON.stringify({ essayText, apiKey, language }),
   });
 };
 
