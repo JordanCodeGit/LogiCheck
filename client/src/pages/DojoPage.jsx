@@ -254,15 +254,15 @@ const DojoPage = () => {
         {/* Fallacy Sparring Module */}
         {activeModule === 'sparring' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold flex items-center space-x-2 text-gray-900 dark:text-gray-100">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center space-x-2">
                 <Sword className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                <span>{t('dojo.sparring.title')}</span>
-              </h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{t('dojo.sparring.title')}</h2>
+              </div>
               {challenge && !sparringLoading && (
                 <button
                   onClick={handleNextChallenge}
-                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                  className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 whitespace-nowrap flex-shrink-0"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>{t('dojo.sparring.newChallenge')}</span>

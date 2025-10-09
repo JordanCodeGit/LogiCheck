@@ -159,7 +159,7 @@ const BiasFeedback = ({ feedback, onClose }) => {
         <div className="p-6 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-600 transition-colors">
           <button
             onClick={onClose}
-            className="btn-primary w-full"
+            className="w-full px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-lg font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
           >
             Continue Practicing
           </button>
