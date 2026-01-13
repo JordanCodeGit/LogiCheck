@@ -134,12 +134,15 @@ async function analyzeWithBackendServer(selectedText) {
     
     const data = await response.json();
     
+    // Return in same format as tryAnalyzeWithEndpoint for consistency
     return {
       success: true,
-      mainClaim: data.mainClaim || 'No main claim identified',
-      assumptions: data.assumptions || [],
-      fallacies: data.fallacies || [],
-      socraticQuestion: data.socraticQuestion || 'What evidence supports this argument?'
+      data: {
+        mainClaim: data.mainClaim || 'No main claim identified',
+        assumptions: data.assumptions || [],
+        fallacies: data.fallacies || [],
+        socraticQuestion: data.socraticQuestion || 'What evidence supports this argument?'
+      }
     };
   } catch (error) {
     console.error('Backend server error:', error);
