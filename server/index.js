@@ -16,7 +16,8 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   'http://localhost:5173', // Local development
   'http://localhost:5174',
-  process.env.FRONTEND_URL, // Vercel production URL from env variable
+  'https://logi-check.vercel.app', // Vercel production
+  process.env.FRONTEND_URL, // Additional frontend URL from env
 ].filter(Boolean); // Remove undefined values
 
 // Middleware

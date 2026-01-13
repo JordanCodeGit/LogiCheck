@@ -1,0 +1,17 @@
+# Render Build Configuration
+# https://render.com/docs/deploy-node-express-app
+
+# Build Command
+# npm install
+
+# Start Command  
+# npm start
+
+# Environment Variables (set in Render Dashboard):
+# - GEMINI_API_KEY
+# - GEMINI_API_KEY_2 (optional)
+# - GEMINI_API_KEY_3 (optional)
+# - GEMINI_API_KEY_4 (optional)
+# - MONGODB_URI (optional - can use MongoDB Atlas free tier)
+# - NODE_ENV=production
+# - FRONTEND_URL=https://logi-check.vercel.app
