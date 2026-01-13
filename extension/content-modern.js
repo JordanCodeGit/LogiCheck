@@ -782,6 +782,21 @@ window.addEventListener('message', (event) => {
     });
   }
   
+  // Handle sync server key mode FROM web TO extension
+  if (event.data.type === 'LOGICHECK_SERVER_KEY_SYNC' && event.data.source === 'logicheck-web') {
+    const enabled = event.data.enabled;
+    chrome.runtime.sendMessage({
+      action: 'setServerKeyMode',
+      enabled: enabled
+    }, (response) => {
+      window.postMessage({
+        type: 'LOGICHECK_SERVER_KEY_SYNC_RESPONSE',
+        source: 'logicheck-extension',
+        success: response?.status === 'ok'
+      }, '*');
+    });
+  }
+  
   // Handle get API key request FROM web
   if (event.data.type === 'LOGICHECK_GET_API_KEY' && event.data.source === 'logicheck-web') {
     // Get API key from extension storage
@@ -791,7 +806,8 @@ window.addEventListener('message', (event) => {
         window.postMessage({
           type: 'LOGICHECK_GET_API_KEY_RESPONSE',
           source: 'logicheck-extension',
-          apiKey: response?.apiKey || null
+          apiKey: response?.apiKey || null,
+          useServerKey: response?.useServerKey || false
         }, '*');
       }
     );
@@ -876,9 +892,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'syncApiKeyFromExtension') {
     // Notify web page about API key change
     window.postMessage({
-      type: 'LOGICHECK_API_KEY_CHANGED',
+      type: 'LOGICHECK_API_KEY_SYNC',
       source: 'logicheck-extension',
       apiKey: request.apiKey
+    }, '*');
+    return true;
+  }
+  
+  // Handle server key mode sync notification from background
+  if (request.action === 'syncServerKeyModeFromExtension') {
+    // Notify web page about server key mode change
+    window.postMessage({
+      type: 'LOGICHECK_SERVER_KEY_SYNC',
+      source: 'logicheck-extension',
+      enabled: request.enabled
     }, '*');
     return true;
   }

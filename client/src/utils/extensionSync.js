@@ -49,15 +49,15 @@ export const isExtensionInstalled = async () => {
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export const syncApiKeyToExtension = async (apiKey) => {
-  // Don't sync server key marker to extension - extension needs real API key
+  // If server key mode, sync the server key flag instead
   if (apiKey === SERVER_KEY_MARKER) {
-    return {
-      success: false,
-      message: 'Server key mode - extension requires its own API key'
-    };
+    return syncServerKeyModeToExtension(true);
   }
 
   try {
+    // First, disable server key mode in extension since we're syncing a real key
+    await syncServerKeyModeToExtension(false);
+    
     return new Promise((resolve) => {
       let responded = false;
       
@@ -106,11 +106,13 @@ export const syncApiKeyToExtension = async (apiKey) => {
 /**
  * Listen for API key changes from the extension
  * @param {Function} callback - Called when API key is updated from extension
+ * @param {Function} serverKeyCallback - Called when server key mode is changed from extension
  */
-export const listenToExtensionChanges = (callback) => {
+export const listenToExtensionChanges = (callback, serverKeyCallback) => {
   const messageListener = (event) => {
     if (event.source !== window) return;
     
+    // Handle API key sync
     if (event.data.type === "LOGICHECK_API_KEY_SYNC" && 
         event.data.source === "logicheck-extension") {
       // Update localStorage
@@ -122,6 +124,22 @@ export const listenToExtensionChanges = (callback) => {
       
       // Notify the callback
       callback(event.data.apiKey);
+    }
+    
+    // Handle server key mode sync
+    if (event.data.type === "LOGICHECK_SERVER_KEY_SYNC" && 
+        event.data.source === "logicheck-extension") {
+      const enabled = event.data.enabled;
+      if (enabled) {
+        localStorage.setItem(API_KEY_STORAGE_KEY, SERVER_KEY_MARKER);
+      } else {
+        localStorage.removeItem(API_KEY_STORAGE_KEY);
+      }
+      
+      // Notify the server key callback if provided
+      if (serverKeyCallback) {
+        serverKeyCallback(enabled);
+      }
     }
   };
 
@@ -159,6 +177,9 @@ export const initializeSync = async () => {
             } else {
               resolve({ synced: false, apiKey: event.data.apiKey });
             }
+          } else if (event.data.useServerKey) {
+            // Extension is using server key mode
+            resolve({ synced: true, useServerKey: true, apiKey: null });
           } else {
             resolve({ synced: false, apiKey: null });
           }
@@ -184,5 +205,57 @@ export const initializeSync = async () => {
   } catch (error) {
     console.error('Error initializing sync:', error);
     return { synced: false, apiKey: null };
+  }
+};
+
+/**
+ * Sync server key mode to extension
+ * @param {boolean} enabled - Whether server key mode is enabled
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export const syncServerKeyModeToExtension = async (enabled) => {
+  try {
+    return new Promise((resolve) => {
+      let responded = false;
+      
+      const listener = (event) => {
+        if (event.source !== window) return;
+        if (event.data.type === "LOGICHECK_SERVER_KEY_SYNC_RESPONSE" && 
+            event.data.source === "logicheck-extension") {
+          responded = true;
+          window.removeEventListener("message", listener);
+          resolve({ 
+            success: event.data.success, 
+            message: event.data.success ? 'Server key mode synced to extension' : 'Failed to sync' 
+          });
+        }
+      };
+      
+      window.addEventListener("message", listener);
+      
+      // Send message to content script
+      window.postMessage({
+        type: "LOGICHECK_SERVER_KEY_SYNC",
+        source: "logicheck-web",
+        enabled: enabled
+      }, "*");
+      
+      // Timeout after 1 second
+      setTimeout(() => {
+        window.removeEventListener("message", listener);
+        if (!responded) {
+          resolve({ 
+            success: false, 
+            message: 'Extension not available or timeout' 
+          });
+        }
+      }, 1000);
+    });
+  } catch (error) {
+    console.error('Error syncing server key mode to extension:', error);
+    return { 
+      success: false, 
+      message: error.message 
+    };
   }
 };

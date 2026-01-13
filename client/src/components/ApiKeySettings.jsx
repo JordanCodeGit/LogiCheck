@@ -23,7 +23,19 @@ const ApiKeySettings = () => {
       // First, try to sync from extension
       const syncResult = await initializeSync();
       
-      // Check if using server key
+      // If extension is using server key mode, sync it to website
+      if (syncResult.useServerKey) {
+        setUseServerKey();
+        setUsingServerKey(true);
+        setIsValid(true);
+        setStatus({ 
+          message: t('settings.apiKey.status.syncedFrom') || '✅ Synced from extension (Server Key)', 
+          type: 'success' 
+        });
+        return;
+      }
+      
+      // Check if using server key locally
       if (isUsingServerKey()) {
         setUsingServerKey(true);
         setIsValid(true);
@@ -66,6 +78,26 @@ const ApiKeySettings = () => {
       } else {
         setApiKey('');
         setIsValid(false);
+        setUsingServerKey(false);
+        setStatus({ 
+          message: t('settings.apiKey.status.clearedNoExt'), 
+          type: 'success' 
+        });
+      }
+    }, 
+    // Server key mode callback
+    (serverKeyEnabled) => {
+      if (serverKeyEnabled) {
+        setUseServerKey();
+        setUsingServerKey(true);
+        setIsValid(true);
+        setApiKey('');
+        setStatus({ 
+          message: t('settings.apiKey.status.serverKeyActivated') || '✅ Server key mode synced from extension', 
+          type: 'success' 
+        });
+      } else {
+        clearServerKeyFlag();
         setUsingServerKey(false);
         setStatus({ 
           message: t('settings.apiKey.status.clearedNoExt'), 

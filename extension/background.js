@@ -410,16 +410,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   }
 
+  // Handle server key mode sync from web page (via content script)
+  if (request.action === 'setServerKeyMode') {
+    try {
+      const enabled = request.enabled;
+      if (enabled) {
+        // Enable server key mode
+        chrome.storage.local.set({ USE_SERVER_KEY: true }, () => {
+          chrome.storage.local.remove('GEMINI_API_KEY', () => {
+            // Reset cached values
+            GOOGLE_AI_API_KEY = null;
+            MODEL_ENDPOINTS = null;
+            USE_SERVER_MODE = true;
+            sendResponse({ status: 'ok' });
+          });
+        });
+      } else {
+        // Disable server key mode
+        chrome.storage.local.set({ USE_SERVER_KEY: false }, () => {
+          USE_SERVER_MODE = false;
+          sendResponse({ status: 'ok' });
+        });
+      }
+      return true; // async
+    } catch (e) {
+      console.error('Failed to set server key mode', e);
+      sendResponse({ status: 'error', error: e.message });
+    }
+  }
+
   // Handle get API key request from web page (via content script)
   if (request.action === 'getApiKey') {
     try {
-      chrome.storage.local.get(['GEMINI_API_KEY'], (result) => {
-        sendResponse({ apiKey: result?.GEMINI_API_KEY || null });
+      chrome.storage.local.get(['GEMINI_API_KEY', 'USE_SERVER_KEY'], (result) => {
+        sendResponse({ 
+          apiKey: result?.GEMINI_API_KEY || null,
+          useServerKey: result?.USE_SERVER_KEY === true
+        });
       });
       return true; // async
     } catch (e) {
       console.error('Failed to get API key', e);
-      sendResponse({ apiKey: null });
+      sendResponse({ apiKey: null, useServerKey: false });
     }
   }
 
@@ -441,6 +473,27 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
           apiKey: newApiKey
         }).catch((err) => {
           // Ignore errors for tabs that don't have the content script
+          console.debug('Could not notify tab', tab.id, err.message);
+        });
+      });
+    });
+  }
+  
+  // Handle server key mode changes
+  if (areaName === 'local' && changes.USE_SERVER_KEY) {
+    const enabled = changes.USE_SERVER_KEY.newValue === true;
+    console.log('Server key mode changed to:', enabled);
+    
+    // Update cached value
+    USE_SERVER_MODE = enabled;
+    
+    // Notify all tabs about the server key mode change
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach((tab) => {
+        chrome.tabs.sendMessage(tab.id, {
+          action: 'syncServerKeyModeFromExtension',
+          enabled: enabled
+        }).catch((err) => {
           console.debug('Could not notify tab', tab.id, err.message);
         });
       });
