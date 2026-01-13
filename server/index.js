@@ -26,6 +26,11 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
     
+    // Allow browser extensions (chrome-extension://, moz-extension://, extension://)
+    if (origin.includes('-extension://') || origin.includes('extension://')) {
+      return callback(null, true);
+    }
+    
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
       callback(null, true);
     } else {
