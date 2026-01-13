@@ -5,19 +5,79 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>LogiCheck Options</title>
     <link rel="stylesheet" href="options.css" />
+    <style>
+      .server-key-section {
+        margin: 20px 0;
+        padding: 15px;
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border-radius: 8px;
+        border: 1px solid #4caf50;
+      }
+      .server-key-section h3 {
+        margin: 0 0 10px 0;
+        color: #2e7d32;
+        font-size: 14px;
+      }
+      .server-key-section p {
+        margin: 0 0 10px 0;
+        font-size: 12px;
+        color: #555;
+      }
+      #serverKeyBtn {
+        background: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+      }
+      #serverKeyBtn:hover {
+        background: #43a047;
+      }
+      #serverKeyBtn.active {
+        background: #2e7d32;
+      }
+      .divider {
+        text-align: center;
+        margin: 20px 0;
+        color: #888;
+        font-size: 12px;
+      }
+      .custom-key-section h3 {
+        margin: 0 0 10px 0;
+        color: #1976d2;
+        font-size: 14px;
+      }
+    </style>
   </head>
   <body>
     <main>
       <h1>LogiCheck - Options</h1>
-      <p>Enter your Gemini API key below. This value is stored locally in your browser and never uploaded anywhere by this extension.</p>
+      
+      <!-- Server Key Section -->
+      <div class="server-key-section">
+        <h3>🚀 Quick Start - Server Key</h3>
+        <p>Use our server-managed API key. No setup required!</p>
+        <button id="serverKeyBtn">Use Server Key</button>
+      </div>
+      
+      <div class="divider">— OR —</div>
+      
+      <!-- Custom Key Section -->
+      <div class="custom-key-section">
+        <h3>⚡ Optimal Performance - Your Own Key</h3>
+        <p>Enter your Gemini API key for faster response times.</p>
 
-      <label for="apiKey">Gemini API Key</label>
-      <input id="apiKey" type="text" placeholder="PASTE_YOUR_GEMINI_KEY_HERE" />
+        <label for="apiKey">Gemini API Key</label>
+        <input id="apiKey" type="text" placeholder="PASTE_YOUR_GEMINI_KEY_HERE" />
 
-      <div class="buttons">
-        <button id="saveBtn" disabled>Save</button>
-        <button id="testBtn">Test key</button>
-        <button id="clearBtn">Clear</button>
+        <div class="buttons">
+          <button id="saveBtn" disabled>Save</button>
+          <button id="testBtn">Test key</button>
+          <button id="clearBtn">Clear</button>
+        </div>
       </div>
 
       <div id="status" aria-live="polite"></div>

@@ -2,12 +2,13 @@
 // Handles context menu creation, keyboard shortcuts, and API communication
 
 // Import runtime config helper (ES module compatible with service worker)
-import { getApiKey } from './config.js';
+import { getApiKey, isUsingServerKey, BACKEND_API_URL } from './config.js';
 
 // Initialize API key and endpoints lazily
 let GOOGLE_AI_API_KEY = null;
 let MODEL_ENDPOINTS = null;
 let CURRENT_LANGUAGE = 'en';
+let USE_SERVER_MODE = false;
 
 // Get language from storage
 async function getLanguage() {
@@ -39,15 +40,26 @@ async function updateContextMenu() {
 }
 
 async function ensureApiKeyLoaded() {
-  if (!GOOGLE_AI_API_KEY) {
-    GOOGLE_AI_API_KEY = await getApiKey();
-    if (GOOGLE_AI_API_KEY) {
-      MODEL_ENDPOINTS = [
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_AI_API_KEY}`
-      ];
-      console.log('Gemini API Key loaded at runtime:', 'Successfully');
-    } else {
-      console.warn('Gemini API Key not found in chrome.storage.local');
+  // Check if using server mode first
+  USE_SERVER_MODE = await isUsingServerKey();
+  
+  if (USE_SERVER_MODE) {
+    console.log('Using server-managed API key mode');
+    GOOGLE_AI_API_KEY = null;
+    MODEL_ENDPOINTS = null;
+  } else {
+    if (!GOOGLE_AI_API_KEY) {
+      GOOGLE_AI_API_KEY = await getApiKey();
+      if (GOOGLE_AI_API_KEY) {
+        MODEL_ENDPOINTS = [
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_AI_API_KEY}`
+        ];
+        console.log('Gemini API Key loaded at runtime:', 'Successfully');
+      } else {
+        // No API key and not in server mode - will try server as fallback
+        console.log('No API key found, will use server as fallback');
+        USE_SERVER_MODE = true;
+      }
     }
   }
   
@@ -62,19 +74,16 @@ async function analyzeTextWithGoogleAI(selectedText) {
   // Ensure API key and endpoints are loaded
   await ensureApiKeyLoaded();
   
-  // Validate API key first
-  if (!GOOGLE_AI_API_KEY) {
-    return {
-      success: false,
-      error: 'API key tidak ditemukan. Silakan set GEMINI_API_KEY melalui extension options.'
-    };
+  // If using server mode or no API key, use backend server
+  if (USE_SERVER_MODE || !GOOGLE_AI_API_KEY) {
+    console.log('Using backend server for analysis...');
+    return await analyzeWithBackendServer(selectedText);
   }
   
   if (!MODEL_ENDPOINTS || MODEL_ENDPOINTS.length === 0) {
-    return {
-      success: false,
-      error: 'Gemini API key belum dikonfigurasi. Silakan set API key melalui extension options.'
-    };
+    // Fallback to server
+    console.log('No endpoints configured, falling back to server...');
+    return await analyzeWithBackendServer(selectedText);
   }
 
   // Try each model endpoint until one works
@@ -91,11 +100,54 @@ async function analyzeTextWithGoogleAI(selectedText) {
     }
   }
   
-  // If all endpoints failed, return error with detailed message
-  return {
-    success: false,
-    error: lastError?.message || 'All model endpoints failed'
-  };
+  // If all endpoints failed, try backend server as final fallback
+  console.log('All direct endpoints failed, trying backend server...');
+  try {
+    return await analyzeWithBackendServer(selectedText);
+  } catch (serverError) {
+    return {
+      success: false,
+      error: lastError?.message || serverError.message || 'All analysis methods failed'
+    };
+  }
+}
+
+// Function to analyze using backend server (Render)
+async function analyzeWithBackendServer(selectedText) {
+  try {
+    const response = await fetch(`${BACKEND_API_URL}/analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: selectedText,
+        language: CURRENT_LANGUAGE
+        // No apiKey - server will use its own
+      })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || `Server error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    return {
+      success: true,
+      mainClaim: data.mainClaim || 'No main claim identified',
+      assumptions: data.assumptions || [],
+      fallacies: data.fallacies || [],
+      socraticQuestion: data.socraticQuestion || 'What evidence supports this argument?'
+    };
+  } catch (error) {
+    console.error('Backend server error:', error);
+    return {
+      success: false,
+      error: `Server error: ${error.message}. The server might be waking up (free tier), please try again in 30-60 seconds.`
+    };
+  }
 }
 
 // Helper function to try analysis with a specific endpoint
