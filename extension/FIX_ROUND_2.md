@@ -240,7 +240,7 @@ Web app receives and displays extension's API key ✅
 
 1. Open LogiCheck web app: http://localhost:5173 (or production URL)
 2. Go to Settings page
-3. Enter API key: `AIzaSyArBF81CMgCMZqJgNT7VDRht0ZSspE6hsw`
+3. Enter your own API key (get from https://aistudio.google.com/app/apikey)
 4. Click "Save API Key"
 5. **Expected:** Green success message "API Key saved and synced to extension!" ✅
 6. Right-click extension icon → Options
@@ -249,7 +249,7 @@ Web app receives and displays extension's API key ✅
 ### Test 3: Extension → Web Sync
 
 1. Right-click extension icon → Options
-2. Enter different API key: `TestKey12345678901234567890`
+2. Enter your own API key
 3. Click "Save API Key"
 4. **Expected:** Green success message
 5. Go back to web app Settings page

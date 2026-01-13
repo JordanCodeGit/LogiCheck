@@ -1,17 +1,12 @@
 import { useState, useEffect } from 'react';
-import { AlertCircle, Check, Key, TestTube, Zap, Clock, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { AlertCircle, Check, Key, TestTube, Zap, Server, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import Alert from './Alert';
-import { getApiKey, saveApiKey, clearApiKey, validateApiKeyFormat } from '../utils/apiKeyUtils';
+import { getApiKey, saveApiKey, clearApiKey, validateApiKeyFormat, isUsingServerKey, setUseServerKey, clearServerKeyFlag } from '../utils/apiKeyUtils';
 import { syncApiKeyToExtension, listenToExtensionChanges, initializeSync } from '../utils/extensionSync';
 import { useLanguage } from '../contexts/LanguageContext';
 
-// Shared API Keys yang disediakan
-const SHARED_API_KEYS = [
-  { id: 1, key: 'AIzaSyArBF81CMgCMZqJgNT7VDRht0ZSspE6hsw', label: 'Shared Key 1' },
-  { id: 2, key: 'AIzaSyAAl4cJixWRfBXok8XAqDwM5iYfrsd7u8k', label: 'Shared Key 2' },
-  { id: 3, key: 'AIzaSyC4GwEs8cCpzv-BXz8SUdy80ZP-MSoJrBE', label: 'Shared Key 3' },
-  { id: 4, key: 'AIzaSyCHfp1JVlsZRKvvCjQcgYC7BTiGDd9-neU', label: 'Shared Key 4' },
-];
+// Special marker for server-managed API key (tidak mengekspos key sebenarnya)
+const SERVER_KEY_MARKER = '__USE_SERVER_KEY__';
 
 const ApiKeySettings = () => {
   const { t } = useLanguage();
@@ -19,8 +14,7 @@ const ApiKeySettings = () => {
   const [status, setStatus] = useState({ message: '', type: '' });
   const [isTesting, setIsTesting] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const [isUsingSharedKey, setIsUsingSharedKey] = useState(false);
-  const [selectedSharedKeyId, setSelectedSharedKeyId] = useState(null);
+  const [usingServerKey, setUsingServerKey] = useState(false);
   const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
 
   // Load stored key on mount and initialize sync with extension
@@ -29,20 +23,17 @@ const ApiKeySettings = () => {
       // First, try to sync from extension
       const syncResult = await initializeSync();
       
+      // Check if using server key
+      if (isUsingServerKey()) {
+        setUsingServerKey(true);
+        setIsValid(true);
+        return;
+      }
+      
       // Then load the key (either synced or existing)
       const storedKey = getApiKey();
-      if (storedKey) {
-        // Check if it's a shared key and get its ID
-        const sharedKeyMatch = SHARED_API_KEYS.find(k => k.key === storedKey);
-        if (sharedKeyMatch) {
-          // If it's a shared key, DON'T show it in the input
-          setIsUsingSharedKey(true);
-          setSelectedSharedKeyId(sharedKeyMatch.id);
-          setApiKey(''); // Keep input empty for shared keys
-        } else {
-          // If it's a custom key, show it in the input
-          setApiKey(storedKey);
-        }
+      if (storedKey && storedKey !== SERVER_KEY_MARKER) {
+        setApiKey(storedKey);
         setIsValid(validateApiKeyFormat(storedKey));
         
         if (syncResult.synced) {
@@ -59,18 +50,14 @@ const ApiKeySettings = () => {
     // Listen for API key updates from extension
     listenToExtensionChanges((newApiKey) => {
       if (newApiKey) {
-        setIsValid(validateApiKeyFormat(newApiKey));
-        const sharedKeyMatch = SHARED_API_KEYS.find(k => k.key === newApiKey);
-        if (sharedKeyMatch) {
-          // If it's a shared key, DON'T show it in the input
-          setIsUsingSharedKey(true);
-          setSelectedSharedKeyId(sharedKeyMatch.id);
-          setApiKey(''); // Keep input empty for shared keys
+        if (newApiKey === SERVER_KEY_MARKER) {
+          setUsingServerKey(true);
+          setIsValid(true);
+          setApiKey('');
         } else {
-          // If it's a custom key, show it in the input
-          setIsUsingSharedKey(false);
-          setSelectedSharedKeyId(null);
+          setUsingServerKey(false);
           setApiKey(newApiKey);
+          setIsValid(validateApiKeyFormat(newApiKey));
         }
         setStatus({ 
           message: t('settings.apiKey.status.updatedFrom'), 
@@ -79,8 +66,7 @@ const ApiKeySettings = () => {
       } else {
         setApiKey('');
         setIsValid(false);
-        setIsUsingSharedKey(false);
-        setSelectedSharedKeyId(null);
+        setUsingServerKey(false);
         setStatus({ 
           message: t('settings.apiKey.status.clearedNoExt'), 
           type: 'success' 
@@ -96,16 +82,6 @@ const ApiKeySettings = () => {
     const valid = validateApiKeyFormat(value);
     setIsValid(valid);
     
-    // Check if it's a shared key and get its ID
-    const sharedKeyMatch = SHARED_API_KEYS.find(k => k.key === value);
-    if (sharedKeyMatch) {
-      setIsUsingSharedKey(true);
-      setSelectedSharedKeyId(sharedKeyMatch.id);
-    } else {
-      setIsUsingSharedKey(false);
-      setSelectedSharedKeyId(null);
-    }
-    
     if (value && !valid) {
       setStatus({ message: t('settings.apiKey.status.invalidFormat'), type: 'error' });
     } else if (valid) {
@@ -115,29 +91,27 @@ const ApiKeySettings = () => {
     }
   };
 
-  // Handle selecting a shared API key
-  const handleSelectSharedKey = async (sharedKey) => {
-    // DO NOT set the key in the input field to keep it hidden
-    // setApiKey(sharedKey.key); // REMOVED - keep key hidden
+  // Handle selecting server-managed API key
+  const handleUseServerKey = async () => {
+    setUsingServerKey(true);
     setIsValid(true);
-    setIsUsingSharedKey(true);
-    setSelectedSharedKeyId(sharedKey.id);
+    setApiKey('');
     
-    // Automatically save the shared key (without showing it)
-    saveApiKey(sharedKey.key);
+    // Save the server key marker
+    setUseServerKey();
     
     // Sync to extension
-    const syncResult = await syncApiKeyToExtension(sharedKey.key);
+    const syncResult = await syncApiKeyToExtension(SERVER_KEY_MARKER);
     
     if (syncResult.success) {
       setStatus({ 
-        message: `✅ ${sharedKey.label} ${t('settings.apiKey.status.sharedActivated')}`, 
-        type: 'warning' 
+        message: t('settings.apiKey.status.serverKeyActivated') || '✅ Server key activated! Synced with extension.', 
+        type: 'success' 
       });
     } else {
       setStatus({ 
-        message: `✅ ${sharedKey.label} ${t('settings.apiKey.status.sharedActivatedNoExt')}`, 
-        type: 'warning' 
+        message: t('settings.apiKey.status.serverKeyActivatedNoExt') || '✅ Server key activated! (Extension not detected)', 
+        type: 'success' 
       });
     }
   };
@@ -222,9 +196,9 @@ const ApiKeySettings = () => {
   const handleClear = async () => {
     setApiKey('');
     clearApiKey();
+    clearServerKeyFlag();
     setIsValid(false);
-    setIsUsingSharedKey(false);
-    setSelectedSharedKeyId(null);
+    setUsingServerKey(false);
     
     // Sync to extension
     const syncResult = await syncApiKeyToExtension('');
@@ -269,11 +243,11 @@ const ApiKeySettings = () => {
             {t('settings.apiKey.label')}
           </label>
           
-          {isUsingSharedKey && selectedSharedKeyId ? (
-            // Show placeholder when using shared key
-            <div className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-lg mb-3 flex items-center gap-2">
-              <Key className="w-4 h-4" />
-              <span>Shared Key {selectedSharedKeyId} {t('settings.apiKey.sharedKeyActive')}</span>
+          {usingServerKey ? (
+            // Show placeholder when using server key
+            <div className="w-full px-4 py-3 border border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg mb-3 flex items-center gap-2">
+              <Server className="w-4 h-4" />
+              <span>{t('settings.apiKey.serverKeyActive') || 'Using Server-Managed API Key'}</span>
             </div>
           ) : (
             // Show input field for custom key
@@ -287,20 +261,20 @@ const ApiKeySettings = () => {
             />
           )}
           
-          {isUsingSharedKey && (
-            <p className="mb-4 text-sm text-yellow-600 dark:text-yellow-400 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              <span>{t('settings.apiKey.sharedKeyNote')}</span>
+          {usingServerKey && (
+            <p className="mb-4 text-sm text-green-600 dark:text-green-400 flex items-start gap-2">
+              <Check className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span>{t('settings.apiKey.serverKeyNote') || 'API key is securely managed on the server. No key is stored in your browser.'}</span>
             </p>
           )}
 
           <div className="flex flex-wrap gap-3 mb-4">
-            {isUsingSharedKey ? (
-              // When using shared key, show "Use Custom Key" button
+            {usingServerKey ? (
+              // When using server key, show "Use Custom Key" button
               <button
                 onClick={() => {
-                  setIsUsingSharedKey(false);
-                  setSelectedSharedKeyId(null);
+                  setUsingServerKey(false);
+                  clearServerKeyFlag();
                   setApiKey('');
                   setIsValid(false);
                   setStatus({ 
@@ -350,35 +324,34 @@ const ApiKeySettings = () => {
           )}
         </div>
 
-        {/* Shared API Keys Section */}
-        <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
+        {/* Server-Managed API Key Section */}
+        <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-700">
           <div className="flex items-center gap-2 mb-3">
-            <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+            <Server className="w-5 h-5 text-green-600 dark:text-green-400" />
             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-              {t('settings.apiKey.quickStart.title')}
+              {t('settings.apiKey.quickStart.title') || 'Quick Start - Server Key'}
             </h3>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-            {t('settings.apiKey.quickStart.description')}
+            {t('settings.apiKey.quickStart.description') || 'Use our server-managed API key to get started instantly. No setup required!'}
           </p>
-          <div className="grid grid-cols-2 gap-3">
-            {SHARED_API_KEYS.map((sharedKey) => (
-              <button
-                key={sharedKey.id}
-                onClick={() => handleSelectSharedKey(sharedKey)}
-                className={`px-4 py-3 rounded-lg font-medium transition-all ${
-                  selectedSharedKeyId === sharedKey.id
-                    ? 'bg-yellow-500 text-white ring-2 ring-yellow-600'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-600'
-                }`}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  {selectedSharedKeyId === sharedKey.id && <Check className="w-4 h-4" />}
-                  {sharedKey.label}
-                </div>
-              </button>
-            ))}
-          </div>
+          <button
+            onClick={handleUseServerKey}
+            className={`w-full px-4 py-3 rounded-lg font-medium transition-all ${
+              usingServerKey
+                ? 'bg-green-500 text-white ring-2 ring-green-600'
+                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-green-100 dark:hover:bg-green-900/30 border border-green-300 dark:border-green-600'
+            }`}
+          >
+            <div className="flex items-center justify-center gap-2">
+              {usingServerKey && <Check className="w-4 h-4" />}
+              <Server className="w-4 h-4" />
+              {t('settings.apiKey.useServerKey') || 'Use Server Key'}
+            </div>
+          </button>
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+            {t('settings.apiKey.serverKeyInfo') || '⚡ Instant access • 🔒 Secure • May have rate limits during high traffic'}
+          </p>
         </div>
 
         {/* Custom API Key Section */}

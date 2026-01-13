@@ -1,8 +1,15 @@
 // Test complete Fallacy Sparring flow in Indonesian
-const API_KEY = 'AIzaSyBWoOLW3gM0RrKUmCpCpFdX5b8KgLNwJd4';
+// NOTE: Set your API key as environment variable: GEMINI_API_KEY=your_key_here
+const API_KEY = process.env.GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
 
 const testSparringFlow = async () => {
   console.log('🧪 Testing Fallacy Sparring Flow (Indonesian)...\n');
+
+  if (API_KEY === 'YOUR_API_KEY_HERE') {
+    console.error('❌ Please set GEMINI_API_KEY environment variable');
+    console.error('   Example: GEMINI_API_KEY=your_key node test-sparring.mjs');
+    process.exit(1);
+  }
 
   try {
     // Step 1: Get challenge in Indonesian

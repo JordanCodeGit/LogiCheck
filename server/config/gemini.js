@@ -4,13 +4,45 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 /**
+ * Get all available server API keys
+ * @returns {string[]} Array of available API keys
+ */
+const getServerApiKeys = () => {
+  const keys = [];
+  
+  // Check for numbered keys (GEMINI_API_KEY, GEMINI_API_KEY_2, etc.)
+  if (process.env.GEMINI_API_KEY) keys.push(process.env.GEMINI_API_KEY);
+  if (process.env.GEMINI_API_KEY_2) keys.push(process.env.GEMINI_API_KEY_2);
+  if (process.env.GEMINI_API_KEY_3) keys.push(process.env.GEMINI_API_KEY_3);
+  if (process.env.GEMINI_API_KEY_4) keys.push(process.env.GEMINI_API_KEY_4);
+  
+  return keys.filter(key => key && key.trim().length > 0);
+};
+
+// Track key usage for rotation (simple round-robin)
+let currentKeyIndex = 0;
+
+/**
+ * Get the next server API key (round-robin rotation)
+ * @returns {string|null} Next available API key
+ */
+const getNextServerKey = () => {
+  const keys = getServerApiKeys();
+  if (keys.length === 0) return null;
+  
+  const key = keys[currentKeyIndex];
+  currentKeyIndex = (currentKeyIndex + 1) % keys.length;
+  return key;
+};
+
+/**
  * Get the Gemini model instance
  * @param {string} apiKey - Optional API key from user (takes priority over env)
  * @returns {Object} Gemini generative model
  */
 export const getGeminiModel = (apiKey = null) => {
   // Use user-provided API key if available, otherwise fall back to server env
-  const key = apiKey || process.env.GEMINI_API_KEY;
+  const key = apiKey || getNextServerKey();
   
   if (!key) {
     throw new Error('No API key provided. Please configure your Gemini API key.');
@@ -141,14 +173,14 @@ export const callGeminiAPI = async (prompt, apiKey = null) => {
     
     // Check if it's a quota exceeded error
     if (error.message && error.message.includes('429')) {
-      const quotaError = new Error('API quota exceeded. You have reached the free tier limit (250 requests per day). Please wait 24 hours, use your own API key in Settings, atau kamu bisa ganti ke pilihan shared API lain.');
+      const quotaError = new Error('API quota exceeded. You have reached the rate limit. Please wait a moment and try again, or use your own API key in Settings for unlimited access.');
       quotaError.statusCode = 429;
       throw quotaError;
     }
     
     // Check for other rate limit errors
     if (error.message && (error.message.includes('quota') || error.message.includes('Too Many Requests'))) {
-      const quotaError = new Error('API quota exceeded. Please wait a few moments, use your own API key in Settings, atau kamu bisa ganti ke pilihan shared API lain.');
+      const quotaError = new Error('API quota exceeded. Please wait a moment and try again, or use your own API key in Settings for better performance.');
       quotaError.statusCode = 429;
       throw quotaError;
     }

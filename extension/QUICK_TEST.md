@@ -25,7 +25,7 @@
 ## ✅ Test 2: API Key Web → Extension (1 minute)
 
 1. Open web app: http://localhost:5173/settings (or your URL)
-2. Enter API key: `AIzaSyArBF81CMgCMZqJgNT7VDRht0ZSspE6hsw`
+2. Enter your own API key (get from https://aistudio.google.com/app/apikey)
 3. Click "Save API Key"
 4. Look for green success with "synced to extension"
 5. Right-click extension icon → **Options**
