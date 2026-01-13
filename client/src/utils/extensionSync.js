@@ -4,6 +4,7 @@
  */
 
 const API_KEY_STORAGE_KEY = 'GEMINI_API_KEY';
+const SERVER_KEY_MARKER = '__USE_SERVER_KEY__';
 
 /**
  * Check if the LogiCheck extension is installed
@@ -48,6 +49,14 @@ export const isExtensionInstalled = async () => {
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export const syncApiKeyToExtension = async (apiKey) => {
+  // Don't sync server key marker to extension - extension needs real API key
+  if (apiKey === SERVER_KEY_MARKER) {
+    return {
+      success: false,
+      message: 'Server key mode - extension requires its own API key'
+    };
+  }
+
   try {
     return new Promise((resolve) => {
       let responded = false;

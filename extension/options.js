@@ -4,6 +4,9 @@ const clearBtn = document.getElementById('clearBtn');
 const testBtn = document.getElementById('testBtn');
 const status = document.getElementById('status');
 
+// Special marker that should not be used in extension
+const SERVER_KEY_MARKER = '__USE_SERVER_KEY__';
+
 function setStatus(msg, ok = true) {
   status.textContent = msg;
   status.style.color = ok ? '#0a0' : '#a00';
@@ -13,8 +16,16 @@ function setStatus(msg, ok = true) {
 async function loadKey() {
   if (chrome && chrome.storage && chrome.storage.local) {
     chrome.storage.local.get(['GEMINI_API_KEY'], (result) => {
-      apiKeyInput.value = result?.GEMINI_API_KEY || '';
-      validateAndToggle();
+      const key = result?.GEMINI_API_KEY || '';
+      // If server key marker was accidentally synced, clear it
+      if (key === SERVER_KEY_MARKER) {
+        apiKeyInput.value = '';
+        setStatus('Server key detected - please enter your own API key', false);
+        chrome.storage.local.remove('GEMINI_API_KEY');
+      } else {
+        apiKeyInput.value = key;
+        validateAndToggle();
+      }
     });
   }
 }
