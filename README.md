@@ -54,8 +54,6 @@ A rich-text editor that gives **argumentation-focused** feedback (not grammar/st
 
 ## 📸 Screenshots
 
-> Drop your captures into a `screenshots/` folder in the repo root using the filenames below and they'll render here. Even 2–3 (Home + Analyzer + one Dojo game) tells the story well.
-
 <table>
   <tr>
     <td width="50%"><img src="screenshots/home.png" alt="Home"/><br/><sub><b>Home</b> — landing &amp; module overview</sub></td>
